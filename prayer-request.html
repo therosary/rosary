@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Prayer Requests — The Rosary</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .privacy-notice{background:rgba(201,168,76,.06);border:1px solid var(--gold-dim);border-left:3px solid var(--gold);padding:1rem 1.4rem;margin-bottom:2rem;font-size:.9rem;color:#dddddd;line-height:1.75}
+    .privacy-notice strong{color:#ffffff;display:block;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.3rem}
+    .form-wrap{background:var(--mid);border:1px solid var(--gold-dim);padding:2.5rem}
+    .form-group{margin-bottom:1.8rem}
+    .form-label{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:.6rem}
+    .form-input,.form-select,.form-textarea{width:100%;background:#0f2035;border:1px solid var(--gold-dim);color:#ffffff;font-family:'EB Garamond',serif;font-size:1rem;padding:.85rem 1rem;transition:border-color .25s;outline:none}
+    .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--gold)}
+    .form-input::placeholder,.form-textarea::placeholder{color:#555;font-style:italic}
+    .form-textarea{resize:vertical;min-height:140px;line-height:1.7}
+    .form-select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c9a84c' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center}
+    .form-select option{background:#0f2035;color:#ffffff}
+    .form-check{display:flex;align-items:flex-start;gap:.8rem;cursor:pointer}
+    .form-check input[type=checkbox]{width:16px;height:16px;margin-top:4px;accent-color:var(--gold);flex-shrink:0}
+    .form-check span{font-size:.95rem;color:#cccccc;line-height:1.6}
+    .form-submit{width:100%;padding:1rem;font-family:'Cinzel',serif;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;background:var(--gold);color:var(--navy);border:none;cursor:pointer;transition:background .3s;margin-top:1rem;display:block;font-weight:600}
+    .form-submit:hover{background:var(--gold-light)}
+    .form-submit:disabled{opacity:.5;cursor:not-allowed}
+    .success-msg{display:none;background:rgba(201,168,76,.08);border:1px solid var(--gold-dim);padding:2rem;text-align:center;margin-top:1.5rem}
+    .success-msg.show{display:block}
+    .success-msg h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold-light);margin-bottom:.5rem}
+    .success-msg p{font-size:.95rem;color:#cccccc;line-height:1.7}
+
+    /* Prayer wall */
+    .prayer-item{padding:1.5rem 0;border-bottom:1px solid rgba(201,168,76,.1)}
+    .prayer-item:last-child{border-bottom:none}
+    .prayer-cat{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem}
+    .prayer-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:#ffffff;line-height:1.7;margin-bottom:.3rem}
+    .prayer-meta{font-size:.78rem;color:#888888}
+    .empty-wall{text-align:center;padding:3rem 2rem;border:1px dashed var(--gold-dim)}
+    .empty-wall p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:#888888}
+    .wall-loading{text-align:center;padding:2rem;font-family:'Cormorant Garamond',serif;font-style:italic;color:#888888}
+
+    /* Sidebar */
+    .sidebar-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:#dddddd;line-height:1.75;border-left:2px solid var(--gold-dim);padding-left:1rem;margin-bottom:.8rem}
+    .sidebar-quote cite{display:block;font-style:normal;font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;color:var(--gold);margin-top:.6rem;text-transform:uppercase}
+
+    .categories{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--gold-dim);margin-top:1rem}
+    .cat-item{background:var(--mid);padding:1rem 1.2rem;font-size:.82rem;color:#cccccc;display:flex;align-items:center;gap:.6rem}
+    .cat-item::before{content:'✝';color:var(--gold);font-size:.65rem;flex-shrink:0}
+  </style>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="page-banner">
+  <p class="banner-label">Bring Your Intentions</p>
+  <h1 class="banner-title">Prayer <em>Requests</em></h1>
+  <div class="banner-divider"></div>
+</div>
+
+<div class="page-body">
+  <div class="two-col">
+    <div>
+      <div class="reveal">
+        <span class="s-label">Submit Your Intention</span>
+        <h2 class="s-title">We <em>Pray</em> for You</h2>
+        <p class="s-body" style="margin-bottom:1.5rem">Every intention submitted here is received with care and prayer. No request is too small, no burden too heavy for Our Lady's intercession.</p>
+
+        <div class="privacy-notice">
+          <strong>Privacy Notice</strong>
+          Your intention is submitted privately and personally reviewed before anything is shared publicly. You choose below whether you would like your prayer on the community wall. If you do not consent, your request remains completely private.
+        </div>
+
+        <div class="form-wrap">
+          <div class="form-group">
+            <label class="form-label" for="pName">Your First Name (optional)</label>
+            <input class="form-input" type="text" id="pName" placeholder="Leave blank to remain anonymous"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pCategory">Category of Intention</label>
+            <select class="form-select" id="pCategory">
+              <option value="">Select a category…</option>
+              <option>Health &amp; Healing</option>
+              <option>Family &amp; Relationships</option>
+              <option>Grief &amp; Loss</option>
+              <option>Financial &amp; Provision</option>
+              <option>Peace &amp; Protection</option>
+              <option>Conversion of a Loved One</option>
+              <option>Vocations</option>
+              <option>Thanksgiving</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="pIntention">Your Prayer Intention</label>
+            <textarea class="form-textarea" id="pIntention" placeholder="Share your intention here. You may be as specific or as brief as you wish. Our Lady receives every prayer."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-check">
+              <input type="checkbox" id="pShareConsent"/>
+              <span>I would like my intention shared on the public prayer wall after review.</span>
+            </label>
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-check">
+              <input type="checkbox" id="pAnonymous"/>
+              <span>If shared publicly, keep me anonymous — do not display my name.</span>
+            </label>
+          </div>
+        </div>
+        <button class="form-submit" id="submitBtn" onclick="submitPrayer()">✝ Submit My Intention</button>
+
+        <div class="success-msg" id="successMsg">
+          <h3>Your intention has been received.</h3>
+          <p id="successDetail">We will pray for you. May Our Lady intercede on your behalf. God bless you.</p>
+        </div>
+      </div>
+
+      <hr class="gold-rule" style="margin-top:3rem"/>
+
+      <div class="reveal">
+        <span class="s-label">Community Prayer Wall</span>
+        <h2 class="s-title">Shared <em>Intentions</em></h2>
+        <p class="s-body" style="margin-bottom:1.5rem">These intentions have been shared by members of our community with their consent. Please keep them in your Rosary today.</p>
+        <div id="prayerWall"><div class="wall-loading">Loading intentions…</div></div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">A Promise of Our Lady</div>
+        <blockquote class="sidebar-quote">
+          "Whoever shall recite the Rosary devoutly, applying himself to the consideration of its sacred mysteries, shall never be conquered by misfortune."
+          <cite>— Our Lady of Fatima</cite>
+        </blockquote>
+      </div>
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Intention Categories</div>
+        <p style="font-size:.85rem;color:#cccccc;margin-bottom:1rem">We pray for all needs, including:</p>
+        <div class="categories">
+          <div class="cat-item">Health</div><div class="cat-item">Family</div>
+          <div class="cat-item">Grief</div><div class="cat-item">Provision</div>
+          <div class="cat-item">Protection</div><div class="cat-item">Conversion</div>
+          <div class="cat-item">Vocations</div><div class="cat-item">Thanksgiving</div>
+        </div>
+      </div>
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Today's Mystery</div>
+        <p style="font-size:.88rem;color:#cccccc;margin-bottom:1rem" id="todayMys">Loading…</p>
+        <a href="mystery.html" class="btn btn-outline" style="width:100%;text-align:center;display:block">Pray Today →</a>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+// ── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ──
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzDyM55F1l2ltzvfz0R6dSEmsw2gZOukFgYMfu5voWRNFvf5Kklu2rWni3hRw5sYIgz6w/exec';
+
+const mm = {0:'Glorious Mysteries',1:'Joyful Mysteries',2:'Sorrowful Mysteries',3:'Glorious Mysteries',4:'Luminous Mysteries',5:'Sorrowful Mysteries',6:'Joyful Mysteries'};
+document.getElementById('todayMys').textContent = 'Today\'s Rosary: ' + mm[new Date().getDay()] + '.';
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function timeAgo(iso) {
+  const s=Math.floor((Date.now()-new Date(iso))/1000);
+  if(s<60)return'Just now';if(s<3600)return Math.floor(s/60)+' min ago';
+  if(s<86400)return Math.floor(s/3600)+' hr ago';if(s<604800)return Math.floor(s/86400)+' days ago';
+  return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+async function loadWall() {
+  const wall = document.getElementById('prayerWall');
+  try {
+    const res = await fetch(`${BACKEND_URL}?action=getPublicIntentions`);
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) {
+      wall.innerHTML = '<div class="empty-wall"><p>No public intentions yet — be the first to share one.</p></div>';
+      return;
+    }
+    // Newest first
+    data.sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    wall.innerHTML = data.map(i => `
+      <div class="prayer-item">
+        <div class="prayer-cat">${esc(i.category||'General')}</div>
+        <div class="prayer-text">${esc(i.intention)}</div>
+        <div class="prayer-meta">${i.anonymous==='true'?'Anonymous':esc(i.name||'Anonymous')} · ${timeAgo(i.submittedAt)}</div>
+      </div>`).join('');
+  } catch(e) {
+    wall.innerHTML = '<div class="empty-wall"><p>Could not load intentions. Please check back soon.</p></div>';
+  }
+}
+
+async function submitPrayer() {
+  const intention = document.getElementById('pIntention').value.trim();
+  if (!intention) { alert('Please enter your prayer intention.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+
+  const shareConsent = document.getElementById('pShareConsent').checked;
+  const anonymous = document.getElementById('pAnonymous').checked;
+  const rawName = document.getElementById('pName').value.trim();
+
+  const payload = {
+    id: 'int_' + Date.now(),
+    name: anonymous || !rawName ? 'Anonymous' : rawName,
+    category: document.getElementById('pCategory').value || 'General',
+    intention,
+    anonymous: String(anonymous),
+    shareConsent: String(shareConsent),
+    status: 'pending',
+    submittedAt: new Date().toISOString()
+  };
+
+  try {
+    await fetch(BACKEND_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'addIntention', payload })
+    });
+
+    ['pName','pIntention'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('pCategory').value = '';
+    document.getElementById('pShareConsent').checked = false;
+    document.getElementById('pAnonymous').checked = false;
+
+    document.getElementById('successDetail').textContent = shareConsent
+      ? 'Your intention will appear on the prayer wall once it has been reviewed by our team. We will pray for you. May Our Lady intercede on your behalf, and may God answer your prayer in his perfect time and wisdom. God bless you.'
+      : 'Your intention has been received privately and will be kept in prayer. We will never share it without your consent. God bless you.';
+    document.getElementById('successMsg').classList.add('show');
+    document.getElementById('successMsg').scrollIntoView({ behavior:'smooth', block:'center' });
+  } catch(e) {
+    alert('There was a problem submitting. Please try again.');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '✝ Submit My Intention';
+  }
+}
+
+loadWall();
+injectNav('prayer-request.html');
+</script>
+</body>
+</html>

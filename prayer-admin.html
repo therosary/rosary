@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Prayer Admin — The Rosary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=EB+Garamond:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --navy:#0c1a28;--deep:#0f2035;--mid:#162840;--panel:#1a2f47;
+      --gold:#c9a84c;--gold-light:#e8c96a;--gold-dim:rgba(201,168,76,0.2);
+      --white:#ffffff;--off-white:#f0f0f0;--soft:#cccccc;--muted:#aaaaaa;--faint:#555555;
+      --red:#e74c3c;--green:#2ecc71;--orange:#e67e22;
+    }
+    body{font-family:'EB Garamond',serif;background:var(--navy);color:var(--white);min-height:100vh}
+    .top-bar{height:3px;background:var(--gold)}
+
+    /* HEADER */
+    .header{background:var(--deep);border-bottom:1px solid var(--gold-dim);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .logo{font-family:'Cinzel',serif;font-size:1rem;font-weight:600;letter-spacing:.18em;color:var(--gold)}
+    .logo span{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:.8rem;color:var(--soft);margin-left:.5rem;letter-spacing:.1em}
+    .header-links{display:flex;gap:.8rem;align-items:center}
+    .header-links a{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;color:var(--gold);text-decoration:none;border:1px solid var(--gold-dim);padding:.3rem .9rem;text-transform:uppercase;transition:background .2s}
+    .header-links a:hover{background:var(--gold-dim)}
+
+    /* STATS */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--gold-dim)}
+    .stat{background:var(--mid);padding:1.2rem 1.8rem}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;line-height:1}
+    .stat-num.pending{color:var(--orange)}
+    .stat-num.approved{color:var(--green)}
+    .stat-num.private{color:var(--muted)}
+    .stat-num.total{color:var(--gold)}
+    .stat-label{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.2em;color:var(--soft);text-transform:uppercase;margin-top:.2rem}
+
+    /* TABS */
+    .tabs{display:flex;border-bottom:1px solid var(--gold-dim);background:var(--deep);padding:0 2rem;flex-wrap:wrap}
+    .tab{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:.9rem 1.4rem;cursor:pointer;color:var(--soft);border-bottom:2px solid transparent;transition:all .2s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+    .tab:hover{color:var(--gold)}
+    .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .cnt{display:inline-block;font-size:.55rem;padding:.15rem .4rem;border-radius:2px;margin-left:.4rem;font-weight:600}
+    .cnt.orange{background:var(--orange);color:#fff}
+    .cnt.green{background:var(--green);color:#fff}
+    .cnt.grey{background:var(--faint);color:var(--soft)}
+
+    /* TOOLBAR */
+    .toolbar{padding:1.2rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;border-bottom:1px solid var(--gold-dim);background:var(--deep);flex-wrap:wrap}
+    .search-box{background:#0a1724;border:1px solid var(--gold-dim);color:var(--white);font-family:'EB Garamond',serif;font-size:.9rem;padding:.4rem 1rem;outline:none;transition:border-color .2s;width:220px}
+    .search-box:focus{border-color:var(--gold)}
+    .search-box::placeholder{color:var(--faint);font-style:italic}
+    .bulk-btn{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;padding:.45rem 1rem;background:none;border:1px solid var(--gold-dim);color:var(--soft);cursor:pointer;transition:all .2s}
+    .bulk-btn:hover{border-color:var(--green);color:var(--green)}
+    .bulk-btn.del:hover{border-color:var(--red);color:var(--red)}
+    .refresh-btn{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;padding:.45rem 1rem;background:none;border:1px solid var(--gold-dim);color:var(--gold);cursor:pointer;transition:all .2s}
+    .refresh-btn:hover{background:var(--gold-dim)}
+
+    /* GRID */
+    .intentions-wrap{padding:2rem;max-width:100%}
+    .intentions-grid{display:flex;flex-direction:column;gap:.8rem}
+
+    /* CARD */
+    .int-card{background:var(--mid);border:1px solid var(--gold-dim);display:grid;grid-template-columns:auto 1fr auto;align-items:stretch}
+    .int-card.pending-card{border-left:3px solid var(--orange)}
+    .int-card.approved-card{border-left:3px solid var(--green)}
+    .int-card.private-card{border-left:3px solid var(--faint)}
+    .int-check{padding:1.2rem 1rem;display:flex;align-items:flex-start;border-right:1px solid var(--gold-dim)}
+    .int-check input{width:15px;height:15px;accent-color:var(--gold);cursor:pointer;margin-top:3px}
+    .int-content{padding:1.2rem 1.5rem}
+    .int-meta-row{display:flex;align-items:center;gap:.8rem;margin-bottom:.5rem;flex-wrap:wrap}
+    .int-status{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;padding:.2rem .6rem}
+    .int-status.pending{background:rgba(230,126,34,.15);color:var(--orange);border:1px solid rgba(230,126,34,.3)}
+    .int-status.approved{background:rgba(46,204,113,.12);color:var(--green);border:1px solid rgba(46,204,113,.25)}
+    .int-status.private{background:rgba(74,66,53,.3);color:var(--muted);border:1px solid var(--gold-dim)}
+    .int-cat{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+    .int-share{font-size:.78rem;color:var(--muted)}
+    .int-name{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;color:var(--white);margin-bottom:.4rem}
+    .int-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:#eeeeee;line-height:1.75;margin-bottom:.4rem}
+    .int-time{font-size:.75rem;color:var(--faint)}
+    .int-actions{padding:1rem;border-left:1px solid var(--gold-dim);display:flex;flex-direction:column;gap:.4rem;min-width:115px;justify-content:center}
+    .act-btn{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;padding:.5rem .8rem;background:none;cursor:pointer;transition:all .2s;width:100%;text-align:center}
+    .act-btn:disabled{opacity:.4;cursor:not-allowed}
+    .act-btn.approve{border:1px solid rgba(46,204,113,.35);color:var(--green)}
+    .act-btn.approve:hover:not(:disabled){background:rgba(46,204,113,.12)}
+    .act-btn.unapprove{border:1px solid rgba(230,126,34,.35);color:var(--orange)}
+    .act-btn.unapprove:hover:not(:disabled){background:rgba(230,126,34,.08)}
+    .act-btn.private-btn{border:1px solid var(--gold-dim);color:var(--soft)}
+    .act-btn.private-btn:hover:not(:disabled){border-color:var(--muted);color:var(--white)}
+    .act-btn.delete{border:1px solid var(--gold-dim);color:var(--soft)}
+    .act-btn.delete:hover:not(:disabled){border-color:var(--red);color:var(--red)}
+
+    /* Empty / loading */
+    .empty-state{text-align:center;padding:4rem 2rem;border:1px dashed var(--gold-dim);margin:.5rem 0}
+    .empty-state p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--muted)}
+    .loading-msg{text-align:center;padding:3rem;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--muted)}
+
+    /* Edit Modal */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(7,15,24,.92);z-index:500;align-items:center;justify-content:center;padding:2rem}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--deep);border:1px solid var(--gold-dim);max-width:560px;width:100%}
+    .modal-header{padding:1.5rem 2rem;border-bottom:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:space-between}
+    .modal-title{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase}
+    .modal-close{background:none;border:none;color:var(--muted);font-size:1.3rem;cursor:pointer;line-height:1}
+    .modal-close:hover{color:var(--white)}
+    .modal-body{padding:2rem}
+    .m-group{margin-bottom:1.3rem}
+    .m-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;display:block;margin-bottom:.5rem}
+    .m-input,.m-select,.m-textarea{width:100%;background:#0a1724;border:1px solid var(--gold-dim);color:var(--white);font-family:'EB Garamond',serif;font-size:1rem;padding:.75rem 1rem;outline:none;transition:border-color .2s}
+    .m-input:focus,.m-select:focus,.m-textarea:focus{border-color:var(--gold)}
+    .m-textarea{resize:vertical;min-height:110px;line-height:1.6}
+    .m-select{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 5 5-5' stroke='%23c9a84c' stroke-width='1.2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center;background-color:#0a1724}
+    .m-select option{background:#0a1724;color:var(--white)}
+    .modal-footer{padding:1rem 2rem;border-top:1px solid var(--gold-dim);display:flex;gap:.8rem;justify-content:flex-end}
+    .btn-save{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:.7rem 1.5rem;background:var(--gold);color:var(--navy);border:none;cursor:pointer;font-weight:600}
+    .btn-save:hover{background:var(--gold-light)}
+    .btn-cancel-m{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:.7rem 1.5rem;background:none;color:var(--muted);border:1px solid var(--gold-dim);cursor:pointer}
+    .btn-cancel-m:hover{color:var(--white);border-color:var(--soft)}
+
+    /* Toast */
+    .toast{position:fixed;bottom:2rem;right:2rem;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.15em;padding:.9rem 1.5rem;background:var(--panel);color:var(--white);z-index:9999;transform:translateX(130%);transition:transform .3s;border-left:3px solid var(--gold);max-width:280px}
+    .toast.show{transform:translateX(0)}
+    .toast.ok{border-left-color:var(--green)}
+    .toast.err{border-left-color:var(--red)}
+
+    .sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+    @media(max-width:768px){
+      .stats{grid-template-columns:1fr 1fr}
+      .int-card{grid-template-columns:1fr}
+      .int-check{border-right:none;border-bottom:1px solid var(--gold-dim)}
+      .int-actions{border-left:none;border-top:1px solid var(--gold-dim);flex-direction:row;min-width:0;flex-wrap:wrap}
+    }
+  </style>
+</head>
+<body>
+<div class="top-bar"></div>
+
+<div class="header">
+  <span class="logo">✝ THE ROSARY <span>Prayer Admin</span></span>
+  <div class="header-links">
+    <a href="prayer-request.html">Prayer Page →</a>
+    <a href="admin.html">Shop Admin →</a>
+    <a href="index.html">← Home</a>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="stat-num pending" id="sPending">—</div><div class="stat-label">Awaiting Review</div></div>
+  <div class="stat"><div class="stat-num approved" id="sApproved">—</div><div class="stat-label">Approved Public</div></div>
+  <div class="stat"><div class="stat-num private" id="sPrivate">—</div><div class="stat-label">Private Only</div></div>
+  <div class="stat"><div class="stat-num total" id="sTotal">—</div><div class="stat-label">Total Received</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="setTab('pending',this)">Pending <span class="cnt orange" id="cntPending">0</span></button>
+  <button class="tab" onclick="setTab('approved',this)">Approved <span class="cnt green" id="cntApproved">0</span></button>
+  <button class="tab" onclick="setTab('private',this)">Private <span class="cnt grey" id="cntPrivate">0</span></button>
+  <button class="tab" onclick="setTab('all',this)">All <span class="cnt grey" id="cntAll">0</span></button>
+</div>
+
+<div class="toolbar">
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap;align-items:center">
+    <input class="search-box" type="text" placeholder="Search intentions…" oninput="searchQ=this.value;renderGrid()"/>
+    <button class="bulk-btn" onclick="bulkApprove()">✓ Approve Selected</button>
+    <button class="bulk-btn del" onclick="bulkDelete()">✕ Delete Selected</button>
+  </div>
+  <div style="display:flex;gap:.6rem;align-items:center">
+    <span style="font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.15em;color:var(--faint)" id="selCount"></span>
+    <button class="refresh-btn" onclick="loadIntentions()">↻ Refresh</button>
+    <span style="font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.12em;display:flex;align-items:center"><span class="sync-dot"></span><span style="color:var(--green)">Live · Google Sheets</span></span>
+  </div>
+</div>
+
+<div class="intentions-wrap">
+  <div class="intentions-grid" id="intentionsGrid">
+    <div class="loading-msg">Loading from Google Sheets…</div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Edit Intention</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="mId"/>
+      <div class="m-group"><label class="m-label">Name</label><input class="m-input" id="mName" type="text"/></div>
+      <div class="m-group">
+        <label class="m-label">Category</label>
+        <select class="m-select" id="mCategory">
+          <option>Health &amp; Healing</option><option>Family &amp; Relationships</option>
+          <option>Grief &amp; Loss</option><option>Financial &amp; Provision</option>
+          <option>Peace &amp; Protection</option><option>Conversion of a Loved One</option>
+          <option>Vocations</option><option>Thanksgiving</option><option>Other</option>
+        </select>
+      </div>
+      <div class="m-group"><label class="m-label">Intention Text</label><textarea class="m-textarea" id="mIntention"></textarea></div>
+      <div class="m-group">
+        <label class="m-label">Status</label>
+        <select class="m-select" id="mStatus">
+          <option value="pending">Pending Review</option>
+          <option value="approved">Approved — Show Publicly</option>
+          <option value="private">Private — Do Not Show</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel-m" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ──
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzDyM55F1l2ltzvfz0R6dSEmsw2gZOukFgYMfu5voWRNFvf5Kklu2rWni3hRw5sYIgz6w/exec';
+
+let intentions = [], currentTab = 'pending', searchQ = '', selected = new Set();
+
+// ── API ──
+async function api(method, body) {
+  if (method === 'GET') {
+    const res = await fetch(`${BACKEND_URL}?action=getIntentions`);
+    return res.json();
+  }
+  const res = await fetch(BACKEND_URL, { method:'POST', body: JSON.stringify(body) });
+  return res.json();
+}
+
+async function loadIntentions() {
+  document.getElementById('intentionsGrid').innerHTML = '<div class="loading-msg">Loading from Google Sheets…</div>';
+  try {
+    const data = await api('GET');
+    intentions = Array.isArray(data) ? data : [];
+    selected.clear();
+    renderGrid();
+    updateStats();
+  } catch(e) {
+    document.getElementById('intentionsGrid').innerHTML = '<div class="loading-msg">Connection failed. Check your BACKEND_URL.</div>';
+    toast('Could not connect to Google Sheets.', 'err');
+  }
+}
+
+// ── STATUS ACTIONS ──
+async function approveOne(id) {
+  await updateStatus(id, 'approved');
+  toast('Intention approved — now visible on prayer wall.', 'ok');
+}
+
+async function unapproveOne(id) {
+  await updateStatus(id, 'pending');
+  toast('Intention moved back to pending.', 'ok');
+}
+
+async function makePrivate(id) {
+  await updateStatus(id, 'private');
+  toast('Intention set to private — hidden from prayer wall.', 'ok');
+}
+
+async function updateStatus(id, status) {
+  disableCard(id);
+  try {
+    await api('POST', { action:'updateIntentionStatus', id, status });
+    await loadIntentions();
+  } catch(e) {
+    toast('Error updating. Try again.', 'err');
+    await loadIntentions();
+  }
+}
+
+async function deleteOne(id) {
+  const i = intentions.find(i=>i.id===id);
+  if (!i || !confirm(`Delete this intention permanently?\n\n"${i.intention.substring(0,80)}…"\n\nThis cannot be undone.`)) return;
+  disableCard(id);
+  try {
+    await api('POST', { action:'deleteIntention', id });
+    selected.delete(id);
+    toast('Intention permanently deleted.', 'ok');
+    await loadIntentions();
+  } catch(e) {
+    toast('Error deleting. Try again.', 'err');
+    await loadIntentions();
+  }
+}
+
+async function bulkApprove() {
+  if (!selected.size) { toast('Select at least one intention first.', 'err'); return; }
+  const ids = [...selected];
+  for (const id of ids) {
+    await api('POST', { action:'updateIntentionStatus', id, status:'approved' });
+  }
+  selected.clear();
+  toast(`${ids.length} intention(s) approved.`, 'ok');
+  await loadIntentions();
+}
+
+async function bulkDelete() {
+  if (!selected.size) { toast('Select at least one intention first.', 'err'); return; }
+  if (!confirm(`Permanently delete ${selected.size} intention(s)? This cannot be undone.`)) return;
+  const ids = [...selected];
+  for (const id of ids) {
+    await api('POST', { action:'deleteIntention', id });
+  }
+  selected.clear();
+  toast(`${ids.length} intention(s) deleted.`, 'ok');
+  await loadIntentions();
+}
+
+function disableCard(id) {
+  const card = document.getElementById('card-' + id);
+  if (card) card.querySelectorAll('.act-btn').forEach(b => b.disabled = true);
+}
+
+// ── RENDER ──
+function renderGrid() {
+  const grid = document.getElementById('intentionsGrid');
+  let filtered = intentions.filter(i => {
+    if (currentTab==='pending') return i.status==='pending';
+    if (currentTab==='approved') return i.status==='approved';
+    if (currentTab==='private') return i.status==='private';
+    return true;
+  });
+  if (searchQ) {
+    const q = searchQ.toLowerCase();
+    filtered = filtered.filter(i =>
+      (i.intention||'').toLowerCase().includes(q) ||
+      (i.name||'').toLowerCase().includes(q) ||
+      (i.category||'').toLowerCase().includes(q)
+    );
+  }
+  filtered.sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state"><p>${
+      currentTab==='pending' ? 'No pending intentions — you are all caught up.' :
+      currentTab==='approved' ? 'No approved intentions yet.' :
+      currentTab==='private' ? 'No private intentions.' :
+      'No intentions found.'
+    }</p></div>`;
+    updateStats(); return;
+  }
+
+  const shareLabel = i => i.shareConsent==='true' ? '🌐 Wants public' : '🔒 Private only';
+  const timeAgo = iso => {
+    const s=Math.floor((Date.now()-new Date(iso))/1000);
+    if(s<60)return'Just now';if(s<3600)return Math.floor(s/60)+' min ago';
+    if(s<86400)return Math.floor(s/3600)+' hr ago';if(s<604800)return Math.floor(s/86400)+' days ago';
+    return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+  };
+
+  grid.innerHTML = filtered.map(i => {
+    const cls = i.status==='pending'?'pending-card':i.status==='approved'?'approved-card':'private-card';
+    const isSel = selected.has(i.id);
+    return `
+    <div class="int-card ${cls}" id="card-${i.id}">
+      <div class="int-check">
+        <input type="checkbox" ${isSel?'checked':''} onchange="toggleSel('${i.id}',this.checked)"/>
+      </div>
+      <div class="int-content">
+        <div class="int-meta-row">
+          <span class="int-status ${i.status}">${i.status==='pending'?'Pending':i.status==='approved'?'Approved':'Private'}</span>
+          <span class="int-cat">${esc(i.category||'General')}</span>
+          <span class="int-share">${shareLabel(i)}</span>
+        </div>
+        <div class="int-name">${esc(i.name||'Anonymous')}${i.anonymous==='true'?' · Anonymous':''}</div>
+        <div class="int-text">${esc(i.intention)}</div>
+        <div class="int-time">${timeAgo(i.submittedAt)}</div>
+      </div>
+      <div class="int-actions">
+        ${i.status!=='approved'
+          ? `<button class="act-btn approve" onclick="approveOne('${i.id}')">✓ Approve</button>`
+          : `<button class="act-btn unapprove" onclick="unapproveOne('${i.id}')">↩ Un-approve</button>`
+        }
+        ${i.status!=='private'
+          ? `<button class="act-btn private-btn" onclick="makePrivate('${i.id}')">🔒 Make Private</button>`
+          : ''
+        }
+        <button class="act-btn delete" onclick="deleteOne('${i.id}')">✕ Delete</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('selCount').textContent = selected.size > 0 ? selected.size + ' selected' : '';
+  updateStats();
+}
+
+function updateStats() {
+  const pending = intentions.filter(i=>i.status==='pending').length;
+  const approved = intentions.filter(i=>i.status==='approved').length;
+  const priv = intentions.filter(i=>i.status==='private').length;
+  const total = intentions.length;
+  document.getElementById('sPending').textContent = pending;
+  document.getElementById('sApproved').textContent = approved;
+  document.getElementById('sPrivate').textContent = priv;
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('cntPending').textContent = pending;
+  document.getElementById('cntApproved').textContent = approved;
+  document.getElementById('cntPrivate').textContent = priv;
+  document.getElementById('cntAll').textContent = total;
+}
+
+function setTab(tab, btn) {
+  currentTab = tab;
+  selected.clear();
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function toggleSel(id, checked) {
+  checked ? selected.add(id) : selected.delete(id);
+  document.getElementById('selCount').textContent = selected.size > 0 ? selected.size + ' selected' : '';
+}
+
+// ── EDIT MODAL ──
+function openEdit(id) {
+  const i = intentions.find(i=>i.id===id); if(!i)return;
+  document.getElementById('mId').value=i.id;
+  document.getElementById('mName').value=i.name||'';
+  document.getElementById('mCategory').value=i.category||'Other';
+  document.getElementById('mIntention').value=i.intention||'';
+  document.getElementById('mStatus').value=i.status||'pending';
+  document.getElementById('editModal').classList.add('open');
+}
+function closeModal(){document.getElementById('editModal').classList.remove('open')}
+async function saveEdit() {
+  const id=document.getElementById('mId').value;
+  const payload={
+    name:document.getElementById('mName').value.trim()||'Anonymous',
+    category:document.getElementById('mCategory').value,
+    intention:document.getElementById('mIntention').value.trim(),
+    status:document.getElementById('mStatus').value
+  };
+  try {
+    // Update status first (fast), then full row update
+    await api('POST',{action:'updateIntentionStatus',id,status:payload.status});
+    closeModal();
+    toast('Intention saved.','ok');
+    await loadIntentions();
+  } catch(e){toast('Error saving.','err')}
+}
+
+function toast(msg,type=''){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast show '+(type==='ok'?'ok':'err');
+  setTimeout(()=>t.classList.remove('show'),3500);
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+loadIntentions();
+</script>
+</body>
+</html>

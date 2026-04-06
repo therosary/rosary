@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Recommended Items — The Rosary</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* ── TEXT OVERRIDES: all white ── */
+    .shop-cat{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem}
+    .shop-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:#ffffff;line-height:1.3;margin-bottom:.6rem}
+    .shop-desc{font-size:.9rem;color:#dddddd;line-height:1.65;flex:1;margin-bottom:1.2rem}
+
+    .filter-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:2.5rem}
+    .filter-btn{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;padding:.55rem 1.2rem;background:none;border:1px solid var(--gold-dim);color:#cccccc;cursor:pointer;transition:all .25s}
+    .filter-btn:hover,.filter-btn.active{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.07)}
+
+    .shop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.5rem}
+    .shop-card{background:var(--mid);border:1px solid var(--gold-dim);display:flex;flex-direction:column;transition:border-color .3s,transform .3s}
+    .shop-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+    .shop-card-img{background:linear-gradient(135deg,#0f2035 0%,#162840 100%);height:200px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--gold-dim);overflow:hidden}
+    .shop-card-img img{max-width:100%;max-height:200px;object-fit:contain}
+    .shop-card-img .emoji-fb{font-size:3rem}
+    .shop-card-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
+    .shop-link{display:block;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;padding:.75rem 1.2rem;background:var(--gold);color:var(--navy);text-decoration:none;text-align:center;transition:background .3s;border:1px solid var(--gold);font-weight:600}
+    .shop-link:hover{background:var(--gold-light)}
+
+    .featured-strip{background:var(--deep);border:1px solid var(--gold-dim);padding:2rem;margin-bottom:3rem;display:flex;align-items:center;gap:2rem;flex-wrap:wrap}
+    .featured-icon{font-size:2.5rem;flex-shrink:0}
+    .featured-tag{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem}
+    .featured-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:#ffffff;margin-bottom:.4rem}
+    .featured-desc{font-size:.9rem;color:#cccccc;line-height:1.6}
+
+    .disclosure{background:rgba(201,168,76,.05);border:1px solid var(--gold-dim);padding:1.2rem 1.5rem;font-size:.8rem;color:#aaaaaa;line-height:1.7;margin-bottom:2.5rem}
+    .disclosure strong{color:#ffffff}
+
+    /* Loading & empty states */
+    .loading-state{text-align:center;padding:3rem;color:#aaaaaa;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem}
+    .empty-state{text-align:center;padding:3rem;border:1px dashed var(--gold-dim);color:#aaaaaa;font-family:'Cormorant Garamond',serif;font-style:italic}
+  </style>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="page-banner">
+  <p class="banner-label">For Your Devotion</p>
+  <h1 class="banner-title">Recommended <em>Items</em></h1>
+  <div class="banner-divider"></div>
+</div>
+
+<div class="page-body">
+
+  <div class="disclosure reveal">
+    <strong>Affiliate Disclosure:</strong> As an Amazon Associate, The Rosary earns a small commission from qualifying purchases at no additional cost to you. Every item listed here has been thoughtfully selected to support your prayer life and devotion.
+  </div>
+
+  <div class="featured-strip reveal" id="featuredStrip" style="display:none">
+    <div class="featured-icon">📿</div>
+    <div style="flex:1">
+      <div class="featured-tag">Featured Item</div>
+      <div class="featured-title" id="featuredTitle">—</div>
+      <div class="featured-desc" id="featuredDesc">—</div>
+    </div>
+    <a href="#" class="btn btn-gold" id="featuredLink" target="_blank" rel="noopener">Shop on Amazon →</a>
+  </div>
+
+  <div class="filter-bar reveal">
+    <button class="filter-btn active" onclick="setFilter('all',this)">All Items</button>
+    <button class="filter-btn" onclick="setFilter('rosaries',this)">Rosaries</button>
+    <button class="filter-btn" onclick="setFilter('books',this)">Prayer Books</button>
+    <button class="filter-btn" onclick="setFilter('home',this)">Home &amp; Altar</button>
+    <button class="filter-btn" onclick="setFilter('gifts',this)">Gift Sets</button>
+    <button class="filter-btn" onclick="setFilter('media',this)">Audio &amp; Media</button>
+  </div>
+
+  <div class="shop-grid" id="shopGrid">
+    <div class="loading-state" style="grid-column:1/-1">Loading products…</div>
+  </div>
+
+</div>
+
+<script>
+// ── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ──
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzDyM55F1l2ltzvfz0R6dSEmsw2gZOukFgYMfu5voWRNFvf5Kklu2rWni3hRw5sYIgz6w/exec';
+
+const catLabels = {rosaries:'Rosaries',books:'Prayer Books',home:'Home & Altar',gifts:'Gift Sets',media:'Audio & Media'};
+const catEmoji  = {rosaries:'📿',books:'📖',home:'🕯️',gifts:'🎁',media:'🎧'};
+let allProducts = [];
+let currentFilter = 'all';
+
+async function loadProducts() {
+  const grid = document.getElementById('shopGrid');
+  try {
+    const res = await fetch(`${BACKEND_URL}?action=getProducts`);
+    const data = await res.json();
+    if (!Array.isArray(data) || data.length === 0) {
+      grid.innerHTML = '<div class="empty-state">No products yet — check back soon.</div>';
+      return;
+    }
+    allProducts = data;
+    renderFeatured();
+    renderGrid();
+  } catch(e) {
+    grid.innerHTML = '<div class="empty-state">Could not load products. Please check your backend URL.</div>';
+  }
+}
+
+function renderFeatured() {
+  const featured = allProducts.find(p => p.featured === 'yes');
+  if (!featured) return;
+  document.getElementById('featuredTitle').textContent = featured.name;
+  document.getElementById('featuredDesc').textContent = featured.desc;
+  document.getElementById('featuredLink').href = featured.link;
+  document.getElementById('featuredStrip').style.display = 'flex';
+}
+
+function renderGrid() {
+  const grid = document.getElementById('shopGrid');
+  const filtered = currentFilter === 'all'
+    ? allProducts
+    : allProducts.filter(p => p.category === currentFilter);
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state">No items in this category yet.</div>';
+    return;
+  }
+
+  // Featured items first
+  const sorted = [...filtered].sort((a,b) => (b.featured==='yes') - (a.featured==='yes'));
+
+  grid.innerHTML = sorted.map(p => `
+    <div class="shop-card" data-cat="${esc(p.category)}">
+      <div class="shop-card-img">
+        ${p.imgUrl
+          ? `<img src="${esc(p.imgUrl)}" alt="${esc(p.name)}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+             <div class="emoji-fb" style="display:none">${catEmoji[p.category]||'📿'}</div>`
+          : `<div class="emoji-fb">${catEmoji[p.category]||'📿'}</div>`
+        }
+      </div>
+      <div class="shop-card-body">
+        <div class="shop-cat">${esc(catLabels[p.category]||p.category)}</div>
+        <div class="shop-name">${esc(p.name)}</div>
+        <div class="shop-desc">${esc(p.desc)}</div>
+        <a href="${esc(p.link)}" class="shop-link" target="_blank" rel="noopener">Shop on Amazon →</a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+loadProducts();
+injectNav('shop.html');
+</script>
+</body>
+</html>

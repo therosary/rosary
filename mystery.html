@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Mystery of the Day — The Rosary</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .mystery-badge{display:inline-block;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;padding:.4rem 1.2rem;border:1px solid var(--gold);color:var(--gold);margin-bottom:1rem}
+    .mystery-intro{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--muted);line-height:1.8;margin-bottom:2rem}
+    .decade-list{display:flex;flex-direction:column;gap:0}
+    .decade-card{border:1px solid var(--gold-dim);border-bottom:none;overflow:hidden}
+    .decade-card:last-child{border-bottom:1px solid var(--gold-dim)}
+    .decade-hdr{display:flex;align-items:center;gap:1.5rem;padding:1.5rem 2rem;cursor:pointer;background:var(--mid);transition:background .3s;user-select:none}
+    .decade-hdr:hover,.decade-hdr.open{background:var(--panel)}
+    .decade-hdr.open{border-bottom:1px solid var(--gold-dim)}
+    .dnum{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2rem;color:var(--gold);opacity:.6;flex-shrink:0;width:40px;line-height:1}
+    .dname{flex:1}
+    .dname strong{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.15em;color:var(--cream);display:block;margin-bottom:.2rem}
+    .dname span{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.95rem;color:var(--muted)}
+    .dtoggle{font-size:.7rem;color:var(--gold);transition:transform .3s}
+    .decade-hdr.open .dtoggle{transform:rotate(180deg)}
+    .decade-body{display:none;padding:1.8rem 2rem 2rem 5rem;background:#0f2035}
+    .decade-body.open{display:block}
+    .dmed{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--warm);line-height:1.85;margin-bottom:1.2rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem}
+    .dfruit{font-size:.85rem;color:var(--muted);line-height:1.7}
+    .dfruit strong{color:var(--gold);font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.1em;display:block;margin-bottom:.4rem}
+
+    .all-section{margin-top:3rem}
+    .tabs{display:flex;gap:0;border-bottom:1px solid var(--gold-dim);margin-bottom:2rem;flex-wrap:wrap}
+    .tab{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;padding:.8rem 1.4rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all .25s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap}
+    .tab:hover{color:var(--gold)}
+    .tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .panel{display:none}
+    .panel.active{display:block}
+    .mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--gold-dim)}
+    .mi{background:var(--mid);padding:1.5rem}
+    .mi-num{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.8rem;color:var(--gold);opacity:.4;line-height:1}
+    .mi-name{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.12em;color:var(--cream);margin:.3rem 0}
+    .mi-desc{font-size:.82rem;color:var(--muted);line-height:1.6;font-style:italic}
+
+    .sched{list-style:none}
+    .sched li{display:flex;justify-content:space-between;padding:.7rem 0;border-bottom:1px solid rgba(201,168,76,.08);font-size:.85rem}
+    .sched li:last-child{border-bottom:none}
+    .sdn{color:var(--muted);font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase}
+    .sdm{color:var(--cream);text-align:right}
+    .sched li.today{background:rgba(201,168,76,.05);margin:0 -2rem;padding:.7rem 2rem}
+    .sched li.today .sdn,.sched li.today .sdm{color:var(--gold)}
+
+    @media(max-width:640px){.decade-body{padding-left:2rem}}
+  </style>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="page-banner">
+  <p class="banner-label">Pray with the Church</p>
+  <h1 class="banner-title">Mystery of <em>the Day</em></h1>
+  <div class="banner-divider"></div>
+</div>
+
+<div class="page-body">
+  <div class="two-col">
+    <div>
+      <div id="todaySection" class="reveal">
+        <div class="mystery-badge" id="mysteryBadge">Loading…</div>
+        <span class="s-label" id="todayDate"></span>
+        <h2 class="s-title" id="mysteryTitle">Today's Mysteries</h2>
+        <p class="mystery-intro" id="mysteryIntro"></p>
+        <div class="decade-list" id="decadeList"></div>
+      </div>
+
+      <hr class="gold-rule" style="margin-top:3rem"/>
+
+      <div class="all-section reveal">
+        <span class="s-label">Reference</span>
+        <h2 class="s-title">All <em>Four</em> Sets of Mysteries</h2>
+        <div class="tabs">
+          <button class="tab active" onclick="showTab('joy',this)">Joyful</button>
+          <button class="tab" onclick="showTab('lum',this)">Luminous</button>
+          <button class="tab" onclick="showTab('sor',this)">Sorrowful</button>
+          <button class="tab" onclick="showTab('glo',this)">Glorious</button>
+        </div>
+        <div id="joy" class="panel active"><div class="mgrid">
+          <div class="mi"><div class="mi-num">I</div><div class="mi-name">The Annunciation</div><div class="mi-desc">The Angel Gabriel announces to Mary she will conceive the Son of God.</div></div>
+          <div class="mi"><div class="mi-num">II</div><div class="mi-name">The Visitation</div><div class="mi-desc">Mary visits Elizabeth; the infant John leaps in the womb.</div></div>
+          <div class="mi"><div class="mi-num">III</div><div class="mi-name">The Nativity</div><div class="mi-desc">Jesus is born in Bethlehem, laid in a manger.</div></div>
+          <div class="mi"><div class="mi-num">IV</div><div class="mi-name">The Presentation</div><div class="mi-desc">Mary and Joseph present Jesus in the Temple in Jerusalem.</div></div>
+          <div class="mi"><div class="mi-num">V</div><div class="mi-name">Finding in the Temple</div><div class="mi-desc">The young Jesus is found among the teachers in the Temple.</div></div>
+        </div></div>
+        <div id="lum" class="panel"><div class="mgrid">
+          <div class="mi"><div class="mi-num">I</div><div class="mi-name">Baptism in the Jordan</div><div class="mi-desc">The Spirit descends on Jesus; the Father proclaims "This is my beloved Son."</div></div>
+          <div class="mi"><div class="mi-num">II</div><div class="mi-name">Wedding at Cana</div><div class="mi-desc">Jesus turns water into wine at Mary's request — his first sign.</div></div>
+          <div class="mi"><div class="mi-num">III</div><div class="mi-name">Proclamation of the Kingdom</div><div class="mi-desc">Jesus calls all to repentance, forgives sin, and heals the sick.</div></div>
+          <div class="mi"><div class="mi-num">IV</div><div class="mi-name">The Transfiguration</div><div class="mi-desc">Jesus shines like the sun before Peter, James, and John on the mountain.</div></div>
+          <div class="mi"><div class="mi-num">V</div><div class="mi-name">Institution of the Eucharist</div><div class="mi-desc">Jesus gives himself as bread and wine at the Last Supper.</div></div>
+        </div></div>
+        <div id="sor" class="panel"><div class="mgrid">
+          <div class="mi"><div class="mi-num">I</div><div class="mi-name">Agony in the Garden</div><div class="mi-desc">Jesus prays in anguish in Gethsemane; his sweat becomes drops of blood.</div></div>
+          <div class="mi"><div class="mi-num">II</div><div class="mi-name">Scourging at the Pillar</div><div class="mi-desc">Jesus is bound and scourged by Roman soldiers.</div></div>
+          <div class="mi"><div class="mi-num">III</div><div class="mi-name">Crowning with Thorns</div><div class="mi-desc">A crown of thorns is placed on Jesus and he is mocked as king.</div></div>
+          <div class="mi"><div class="mi-num">IV</div><div class="mi-name">Carrying the Cross</div><div class="mi-desc">Jesus carries his cross toward Calvary, falling three times.</div></div>
+          <div class="mi"><div class="mi-num">V</div><div class="mi-name">The Crucifixion</div><div class="mi-desc">Jesus is crucified, dies, and is laid in the tomb.</div></div>
+        </div></div>
+        <div id="glo" class="panel"><div class="mgrid">
+          <div class="mi"><div class="mi-num">I</div><div class="mi-name">The Resurrection</div><div class="mi-desc">Jesus rises from the dead on the third day, victorious over sin and death.</div></div>
+          <div class="mi"><div class="mi-num">II</div><div class="mi-name">The Ascension</div><div class="mi-desc">Jesus ascends into heaven forty days after his resurrection.</div></div>
+          <div class="mi"><div class="mi-num">III</div><div class="mi-name">Descent of the Holy Spirit</div><div class="mi-desc">The Spirit descends on Mary and the Apostles at Pentecost.</div></div>
+          <div class="mi"><div class="mi-num">IV</div><div class="mi-name">The Assumption</div><div class="mi-desc">Mary is assumed body and soul into heavenly glory.</div></div>
+          <div class="mi"><div class="mi-num">V</div><div class="mi-name">Coronation of Mary</div><div class="mi-desc">Mary is crowned Queen of Heaven and Earth by her Son.</div></div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Weekly Schedule</div>
+        <ul class="sched" id="daySchedule">
+          <li data-day="0"><span class="sdn">Sunday</span><span class="sdm">Glorious</span></li>
+          <li data-day="1"><span class="sdn">Monday</span><span class="sdm">Joyful</span></li>
+          <li data-day="2"><span class="sdn">Tuesday</span><span class="sdm">Sorrowful</span></li>
+          <li data-day="3"><span class="sdn">Wednesday</span><span class="sdm">Glorious</span></li>
+          <li data-day="4"><span class="sdn">Thursday</span><span class="sdm">Luminous</span></li>
+          <li data-day="5"><span class="sdn">Friday</span><span class="sdm">Sorrowful</span></li>
+          <li data-day="6"><span class="sdn">Saturday</span><span class="sdm">Joyful</span></li>
+        </ul>
+      </div>
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Key Prayers</div>
+        <p style="font-size:.88rem;color:var(--muted);line-height:1.75"><strong style="color:var(--cream);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;display:block;margin-bottom:.3rem">Hail Mary</strong>Hail Mary, full of grace, the Lord is with thee. Blessed art thou among women, and blessed is the fruit of thy womb, Jesus. Holy Mary, Mother of God, pray for us sinners, now and at the hour of our death. Amen.</p>
+        <hr class="gold-rule"/>
+        <p style="font-size:.88rem;color:var(--muted);line-height:1.75"><strong style="color:var(--cream);font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.1em;display:block;margin-bottom:.3rem">Fátima Prayer</strong>O my Jesus, forgive us our sins, save us from the fires of hell, lead all souls to heaven, especially those in most need of Thy mercy.</p>
+      </div>
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Devotional Shop</div>
+        <p style="font-size:.88rem;color:var(--muted);line-height:1.7;margin-bottom:1rem">Browse Rosaries, prayer books, and devotional items on Amazon.</p>
+        <a href="shop.html" class="btn btn-gold" style="width:100%;text-align:center;display:block">Visit Our Shop →</a>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+const M={
+  joyful:{name:'Joyful Mysteries',intro:'Prayed on Mondays and Saturdays, the Joyful Mysteries contemplate the joy of the Incarnation of Christ.',decades:[
+    {n:'The Annunciation',ref:'Luke 1:26–38',med:'The Angel Gabriel appears to Mary and announces she will conceive the Son of God by the Holy Spirit. Mary responds with perfect humility: "Behold the handmaid of the Lord."',fruit:'Humility'},
+    {n:'The Visitation',ref:'Luke 1:39–56',med:'Mary travels to visit her cousin Elizabeth. At the sound of Mary\'s greeting, the infant John leaps in the womb and Elizabeth exclaims: "Blessed are you among women!"',fruit:'Love of Neighbor'},
+    {n:'The Nativity',ref:'Luke 2:1–20',med:'Jesus is born in a stable in Bethlehem, wrapped in swaddling clothes, laid in a manger. Angels announce to the shepherds: "Glory to God in the highest!"',fruit:'Poverty of Spirit'},
+    {n:'The Presentation',ref:'Luke 2:22–38',med:'Mary and Joseph present the infant Jesus in the Temple. Simeon takes the child in his arms and prophesies he is the light of the nations and a sign of contradiction.',fruit:'Obedience'},
+    {n:'Finding in the Temple',ref:'Luke 2:41–52',med:'After three days of searching, Mary and Joseph find the twelve-year-old Jesus in the Temple, sitting among the teachers, listening and asking questions.',fruit:'Zeal for God\'s House'}
+  ]},
+  luminous:{name:'Luminous Mysteries',intro:'Prayed on Thursdays, the Luminous Mysteries illuminate key moments of Christ\'s public ministry, introduced by Saint John Paul II.',decades:[
+    {n:'Baptism in the Jordan',ref:'Matthew 3:13–17',med:'Jesus is baptized by John in the Jordan. The heavens open, the Spirit descends like a dove, and the Father declares: "This is my beloved Son, with whom I am well pleased."',fruit:'Openness to the Holy Spirit'},
+    {n:'Wedding at Cana',ref:'John 2:1–12',med:'Mary tells the servants: "Do whatever he tells you." Jesus turns water into wine — his first sign — and his disciples come to believe in him.',fruit:'To Mary: Do Whatever He Tells You'},
+    {n:'Proclamation of the Kingdom',ref:'Mark 1:15',med:'Jesus proclaims the Kingdom of God, calls sinners to conversion, forgives sin, heals the sick, and announces the beatitudes to all who follow him.',fruit:'Repentance & Trust in God'},
+    {n:'The Transfiguration',ref:'Matthew 17:1–8',med:'On a high mountain, Jesus is transfigured before Peter, James, and John. His face shines like the sun; Moses and Elijah appear beside him.',fruit:'Desire for Holiness'},
+    {n:'Institution of the Eucharist',ref:'Luke 22:14–20',med:'At the Last Supper, Jesus takes bread and wine, gives thanks, and says: "This is my body… This is my blood." He commands the Apostles to do this in his memory.',fruit:'Eucharistic Adoration'}
+  ]},
+  sorrowful:{name:'Sorrowful Mysteries',intro:'Prayed on Tuesdays and Fridays, the Sorrowful Mysteries meditate on the passion and death of Our Lord Jesus Christ.',decades:[
+    {n:'Agony in the Garden',ref:'Luke 22:39–46',med:'Jesus prays in Gethsemane: "Father, if you are willing, take this cup from me; yet not my will, but yours be done." His sweat becomes like drops of blood falling to the ground.',fruit:'Contrition for Sin'},
+    {n:'Scourging at the Pillar',ref:'John 19:1',med:'Pilate has Jesus taken and scourged. Jesus endures the terrible pain of the lash in silence and patience, offering his suffering for the sins of all humanity.',fruit:'Mortification'},
+    {n:'Crowning with Thorns',ref:'Matthew 27:28–30',med:'The soldiers weave a crown of thorns and press it onto Jesus\'s head. They clothe him in a purple robe and mock him: "Hail, King of the Jews!"',fruit:'Moral Courage'},
+    {n:'Carrying the Cross',ref:'Luke 23:26–32',med:'Jesus carries his heavy cross toward Calvary, falling three times under its weight, yet rising each time. Simon of Cyrene is compelled to help carry it.',fruit:'Patient Endurance'},
+    {n:'The Crucifixion',ref:'John 19:17–30',med:'Jesus is crucified. He forgives those who crucify him, promises paradise to the repentant thief, and entrusts his mother to the Beloved Disciple. "It is finished."',fruit:'Salvation & Forgiveness'}
+  ]},
+  glorious:{name:'Glorious Mysteries',intro:'Prayed on Sundays and Wednesdays, the Glorious Mysteries celebrate the triumph of Christ over death and the glory of Our Lady.',decades:[
+    {n:'The Resurrection',ref:'John 20:1–18',med:'On the third day, Jesus rises from the dead. The tomb is empty. He appears first to Mary Magdalene in the garden and breathes his peace upon the disciples.',fruit:'Faith'},
+    {n:'The Ascension',ref:'Acts 1:9–11',med:'Forty days after his resurrection, Jesus ascends into heaven. Two angels appear: "This same Jesus, who has been taken from you, will come back in the same way."',fruit:'Hope & Desire for Heaven'},
+    {n:'Descent of the Holy Spirit',ref:'Acts 2:1–13',med:'At Pentecost, the Holy Spirit descends on Mary and the Apostles in tongues of fire. They are filled with the Spirit and begin to proclaim the Gospel in many languages.',fruit:'Wisdom & Gifts of the Spirit'},
+    {n:'The Assumption',ref:'Revelation 12:1',med:'At the end of her earthly life, the Blessed Virgin Mary is assumed body and soul into heavenly glory, sharing fully in the resurrection of her Son.',fruit:'Grace of a Holy Death'},
+    {n:'Coronation of Mary',ref:'Revelation 12:1',med:'Mary, Mother of God, is crowned Queen of Heaven and Earth by her Divine Son, and intercedes as our mother for all who call upon her name in prayer.',fruit:'Trust in Mary\'s Intercession'}
+  ]}
+};
+const dayMap={0:'glorious',1:'joyful',2:'sorrowful',3:'glorious',4:'luminous',5:'sorrowful',6:'joyful'};
+const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const roman=['I','II','III','IV','V'];
+
+function buildToday(){
+  const d=new Date().getDay();
+  const key=dayMap[d];
+  const m=M[key];
+  document.getElementById('mysteryBadge').textContent=m.name;
+  document.getElementById('todayDate').textContent=dayNames[d]+', '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('mysteryTitle').textContent=m.name;
+  document.getElementById('mysteryIntro').textContent=m.intro;
+  const list=document.getElementById('decadeList');
+  list.innerHTML='';
+  m.decades.forEach((dec,i)=>{
+    const c=document.createElement('div');
+    c.className='decade-card';
+    c.innerHTML=`
+      <div class="decade-hdr" onclick="this.classList.toggle('open');this.nextElementSibling.classList.toggle('open')">
+        <div class="dnum">${roman[i]}</div>
+        <div class="dname"><strong>${dec.n}</strong><span>${dec.ref}</span></div>
+        <span class="dtoggle">▼</span>
+      </div>
+      <div class="decade-body">
+        <p class="dmed">${dec.med}</p>
+        <div class="dfruit"><strong>Fruit of this Mystery</strong>${dec.fruit} — As you pray the ten Hail Marys, meditate on this mystery and ask Our Lady to obtain this grace for you.</div>
+      </div>`;
+    list.appendChild(c);
+  });
+  document.querySelectorAll('.sched li').forEach(li=>{
+    if(parseInt(li.dataset.day)===d) li.classList.add('today');
+  });
+}
+
+function showTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+buildToday();
+injectNav('mystery.html');
+</script>
+</body>
+</html>
