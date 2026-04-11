@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Rosary Gallery — The Mysteries in Pictures</title>
+  <meta name="description" content="The twenty mysteries of the Rosary in pictures — Joyful, Luminous, Sorrowful, and Glorious. A visual meditation on the life of Jesus Christ and Our Lady."/>
+  <meta property="og:title" content="Rosary Gallery — The Mysteries in Pictures"/>
+  <meta property="og:description" content="A visual meditation on all twenty mysteries of the Rosary."/>
+  <link rel="canonical" href="https://www.therosary.site/gallery.html"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Filter tabs ── */
+    .gallery-filters{display:flex;gap:0;border-bottom:1px solid var(--gold-dim);margin-bottom:3rem;flex-wrap:wrap;overflow-x:auto}
+    .gf-btn{font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;padding:.9rem 1.6rem;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;transition:all .25s}
+    .gf-btn:hover{color:var(--gold)}
+    .gf-btn.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .gf-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:.4rem;vertical-align:middle}
+
+    /* ── Mystery set heading ── */
+    .mystery-set{margin-bottom:4rem;display:none}
+    .mystery-set.active{display:block}
+    .set-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;padding-bottom:1.2rem;border-bottom:1px solid var(--gold-dim)}
+    .set-icon{display:flex;align-items:center;justify-content:center}
+    .set-info{}
+    .set-name{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:2rem;color:var(--cream);line-height:1}
+    .set-name em{font-style:italic;color:var(--gold-light)}
+    .set-days{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;margin-top:.3rem}
+
+    /* ── Gallery grid ── */
+    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+
+    /* ── Mystery card ── */
+    .mystery-card{background:var(--mid);border:1px solid var(--gold-dim);cursor:pointer;transition:border-color .3s,transform .3s;position:relative;overflow:hidden}
+    .mystery-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+    .mystery-card:hover .card-overlay{opacity:1}
+
+    /* ── Visual art panel ── */
+    .card-art{height:220px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+    .card-art-bg{position:absolute;inset:0;transition:transform .6s ease}
+    .mystery-card:hover .card-art-bg{transform:scale(1.05)}
+    .card-art-symbol{position:relative;z-index:2;text-align:center}
+    .card-art-img{width:100%;height:220px;object-fit:cover;display:block;position:absolute;inset:0;z-index:1;transition:transform .6s ease}
+    .mystery-card:hover .card-art-img{transform:scale(1.05)}
+    .art-verse{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:rgba(244,237,224,.85);margin-top:.5rem;letter-spacing:.05em;position:relative;z-index:2;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+
+    /* ── Overlay on hover ── */
+    .card-overlay{position:absolute;inset:0;background:rgba(201,168,76,.08);border-top:2px solid var(--gold);opacity:0;transition:opacity .3s;z-index:3;display:flex;align-items:center;justify-content:center}
+    .overlay-text{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase}
+
+    /* ── Card body ── */
+    .card-body{padding:1.5rem}
+    .card-num{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.3rem;color:var(--gold);opacity:.5;line-height:1;margin-bottom:.3rem}
+    .card-name{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--cream);line-height:1.25;margin-bottom:.4rem}
+    .card-ref{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin-bottom:.6rem}
+    .card-med{font-size:.88rem;color:var(--muted);line-height:1.65}
+    .card-fruit{display:inline-block;margin-top:.8rem;font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.2em;color:var(--navy);background:var(--gold);padding:.25rem .8rem;text-transform:uppercase}
+
+    /* ── Lightbox ── */
+    .lightbox{display:none;position:fixed;inset:0;background:rgba(7,15,24,.97);z-index:1000;align-items:center;justify-content:center;padding:2rem;animation:lbIn .25s ease}
+    .lightbox.open{display:flex}
+    @keyframes lbIn{from{opacity:0}to{opacity:1}}
+    .lb-inner{max-width:740px;width:100%;background:var(--deep);border:1px solid var(--gold-dim);position:relative;max-height:90vh;overflow-y:auto}
+    .lb-art{height:280px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-bottom:1px solid var(--gold-dim)}
+    .lb-art-img{width:100%;height:280px;object-fit:cover;display:block;position:absolute;inset:0}
+    .lb-art-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(7,15,24,.7) 0%,transparent 60%);z-index:1}
+    .lb-art-symbol{text-align:center;position:relative;z-index:2}
+    .lb-art-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.4em;color:var(--gold);text-transform:uppercase;margin-top:.8rem;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+    .lb-body{padding:2.5rem}
+    .lb-set{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem}
+    .lb-num{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.4rem;color:var(--gold);opacity:.5;margin-bottom:.3rem}
+    .lb-name{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:2rem;color:var(--cream);line-height:1.15;margin-bottom:.4rem}
+    .lb-ref{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem}
+    .lb-med{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--warm);line-height:1.9;margin-bottom:1.5rem;border-left:2px solid var(--gold-dim);padding-left:1.2rem}
+    .lb-fruit-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem}
+    .lb-fruit-val{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--cream)}
+    .lb-scripture{background:var(--mid);border:1px solid var(--gold-dim);padding:1.2rem 1.5rem;margin-top:1.5rem}
+    .lb-scripture-label{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem}
+    .lb-scripture-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1rem;color:var(--warm);line-height:1.75}
+    .lb-close{position:absolute;top:1rem;right:1rem;background:none;border:1px solid var(--gold-dim);color:var(--muted);width:36px;height:36px;cursor:pointer;font-size:1.1rem;display:flex;align-items:center;justify-content:center;transition:all .2s;z-index:10}
+    .lb-close:hover{border-color:var(--gold);color:var(--gold)}
+    .lb-nav{display:flex;gap:.8rem;margin-top:1.5rem}
+    .lb-nav-btn{flex:1;padding:.7rem;font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;background:none;border:1px solid var(--gold-dim);color:var(--muted);cursor:pointer;transition:all .2s}
+    .lb-nav-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+    /* Art backgrounds per set — shown as fallback if image fails */
+    .art-joyful .card-art-bg{background:radial-gradient(ellipse at 50% 0%,rgba(255,200,100,.15) 0%,transparent 60%),linear-gradient(160deg,#0d1f35 0%,#162840 100%)}
+    .art-luminous .card-art-bg{background:radial-gradient(ellipse at 50% 0%,rgba(150,200,255,.12) 0%,transparent 60%),linear-gradient(160deg,#0a1a30 0%,#0f2035 100%)}
+    .art-sorrowful .card-art-bg{background:radial-gradient(ellipse at 50% 0%,rgba(180,60,60,.12) 0%,transparent 60%),linear-gradient(160deg,#150d10 0%,#1a1025 100%)}
+    .art-glorious .card-art-bg{background:radial-gradient(ellipse at 50% 0%,rgba(255,220,80,.15) 0%,transparent 60%),linear-gradient(160deg,#141a0a 0%,#1a2010 100%)}
+
+    .lb-art.art-joyful{background:radial-gradient(ellipse at 50% 0%,rgba(255,200,100,.18) 0%,transparent 65%),linear-gradient(160deg,#0d1f35 0%,#162840 100%)}
+    .lb-art.art-luminous{background:radial-gradient(ellipse at 50% 0%,rgba(150,200,255,.15) 0%,transparent 65%),linear-gradient(160deg,#0a1a30 0%,#0f2035 100%)}
+    .lb-art.art-sorrowful{background:radial-gradient(ellipse at 50% 0%,rgba(180,60,60,.15) 0%,transparent 65%),linear-gradient(160deg,#150d10 0%,#1a1025 100%)}
+    .lb-art.art-glorious{background:radial-gradient(ellipse at 50% 0%,rgba(255,220,80,.18) 0%,transparent 65%),linear-gradient(160deg,#141a0a 0%,#1a2010 100%)}
+
+    @media(max-width:600px){
+      .gallery-grid{grid-template-columns:1fr}
+      .lb-inner{margin:0}
+    }
+  </style>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NDQSYWE7SJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NDQSYWE7SJ');
+  </script>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="page-banner">
+  <p class="banner-label">Visual Meditation</p>
+  <h1 class="banner-title">Rosary <em>Gallery</em></h1>
+  <div class="banner-divider"></div>
+</div>
+
+<div class="page-body">
+
+  <div class="reveal" style="max-width:620px;margin-bottom:2.5rem">
+    <p class="s-body">The twenty mysteries of the Rosary are twenty windows into the life of Jesus Christ and Our Lady. Click any mystery to open a full meditation, its Scripture reference, and the spiritual fruit to ask for as you pray.</p>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="gallery-filters">
+    <button class="gf-btn active" onclick="showSet('all',this)"><span class="gf-dot" style="background:var(--gold)"></span>All Twenty</button>
+    <button class="gf-btn" onclick="showSet('joyful',this)"><span class="gf-dot" style="background:#f5c842"></span>Joyful</button>
+    <button class="gf-btn" onclick="showSet('luminous',this)"><span class="gf-dot" style="background:#60a5fa"></span>Luminous</button>
+    <button class="gf-btn" onclick="showSet('sorrowful',this)"><span class="gf-dot" style="background:#e57373"></span>Sorrowful</button>
+    <button class="gf-btn" onclick="showSet('glorious',this)"><span class="gf-dot" style="background:#81c784"></span>Glorious</button>
+  </div>
+
+  <!-- JOYFUL -->
+  <div class="mystery-set active" id="set-joyful">
+    <div class="set-header">
+      <div class="set-icon">
+        <!-- PLACEHOLDER: set header icon for Joyful Mysteries -->
+        <img src="CLOUDINARY_JOYFUL_ICON" alt="Joyful Mysteries" style="width:56px;height:56px;object-fit:cover;display:block;" loading="lazy" onerror="this.style.opacity='0'">
+      </div>
+      <div class="set-info">
+        <div class="set-name">The <em>Joyful</em> Mysteries</div>
+        <div class="set-days">Prayed on Mondays &amp; Saturdays</div>
+      </div>
+    </div>
+    <div class="gallery-grid" id="grid-joyful"></div>
+  </div>
+
+  <!-- LUMINOUS -->
+  <div class="mystery-set active" id="set-luminous">
+    <div class="set-header">
+      <div class="set-icon">
+        <!-- PLACEHOLDER: set header icon for Luminous Mysteries -->
+        <img src="CLOUDINARY_LUMINOUS_ICON" alt="Luminous Mysteries" style="width:56px;height:56px;object-fit:cover;display:block;" loading="lazy" onerror="this.style.opacity='0'">
+      </div>
+      <div class="set-info">
+        <div class="set-name">The <em>Luminous</em> Mysteries</div>
+        <div class="set-days">Prayed on Thursdays</div>
+      </div>
+    </div>
+    <div class="gallery-grid" id="grid-luminous"></div>
+  </div>
+
+  <!-- SORROWFUL -->
+  <div class="mystery-set active" id="set-sorrowful">
+    <div class="set-header">
+      <div class="set-icon">
+        <!-- PLACEHOLDER: set header icon for Sorrowful Mysteries -->
+        <img src="CLOUDINARY_SORROWFUL_ICON" alt="Sorrowful Mysteries" style="width:56px;height:56px;object-fit:cover;display:block;" loading="lazy" onerror="this.style.opacity='0'">
+      </div>
+      <div class="set-info">
+        <div class="set-name">The <em>Sorrowful</em> Mysteries</div>
+        <div class="set-days">Prayed on Tuesdays &amp; Fridays</div>
+      </div>
+    </div>
+    <div class="gallery-grid" id="grid-sorrowful"></div>
+  </div>
+
+  <!-- GLORIOUS -->
+  <div class="mystery-set active" id="set-glorious">
+    <div class="set-header">
+      <div class="set-icon">
+        <!-- PLACEHOLDER: set header icon for Glorious Mysteries -->
+        <img src="CLOUDINARY_GLORIOUS_ICON" alt="Glorious Mysteries" style="width:56px;height:56px;object-fit:cover;display:block;" loading="lazy" onerror="this.style.opacity='0'">
+      </div>
+      <div class="set-info">
+        <div class="set-name">The <em>Glorious</em> Mysteries</div>
+        <div class="set-days">Prayed on Sundays &amp; Wednesdays</div>
+      </div>
+    </div>
+    <div class="gallery-grid" id="grid-glorious"></div>
+  </div>
+
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lb-inner" id="lbInner">
+    <button class="lb-close" onclick="closeLightbox()">✕</button>
+    <div class="lb-art" id="lbArt">
+      <!-- PLACEHOLDER: lightbox hero image, set dynamically by openLightbox() -->
+      <img id="lbImg" class="lb-art-img" src="" alt="" loading="lazy" onerror="this.style.display='none'">
+      <div class="lb-art-overlay"></div>
+      <div class="lb-art-symbol">
+        <div class="lb-art-label" id="lbSetLabel"></div>
+      </div>
+    </div>
+    <div class="lb-body">
+      <div class="lb-set" id="lbSet"></div>
+      <div class="lb-num" id="lbNum"></div>
+      <div class="lb-name" id="lbName"></div>
+      <div class="lb-ref" id="lbRef"></div>
+      <div class="lb-med" id="lbMed"></div>
+      <div class="lb-fruit-label">Fruit of This Mystery</div>
+      <div class="lb-fruit-val" id="lbFruit"></div>
+      <div class="lb-scripture" id="lbScripture">
+        <div class="lb-scripture-label">Scripture</div>
+        <div class="lb-scripture-text" id="lbScriptureText"></div>
+      </div>
+      <div class="lb-nav">
+        <button class="lb-nav-btn" id="lbPrev" onclick="navigateLb(-1)">← Previous</button>
+        <button class="lb-nav-btn" id="lbNext" onclick="navigateLb(1)">Next →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const MYSTERIES = {
+  joyful: {
+    name: 'Joyful Mysteries', days: 'Monday & Saturday', artClass: 'art-joyful',
+    items: [
+      { num:'I',   name:'The Annunciation',        ref:'Luke 1:26–38',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775770554/the_announcition_oa4pqv.jpg',   fruit:'Humility',          med:'The Angel Gabriel appears to the Virgin Mary in Nazareth and announces that she will conceive the Son of God by the Holy Spirit. Mary, though troubled and uncertain, responds with perfect surrender: "Behold, I am the handmaid of the Lord; let it be done to me according to your word." In this moment, the eternal Word takes flesh. Heaven bows to the consent of a young woman.', scripture:'"Hail, full of grace! The Lord is with you." — Luke 1:28' },
+      { num:'II',  name:'The Visitation',           ref:'Luke 1:39–56',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775814412/visitation_buzivl.jpg',   fruit:'Love of Neighbor',  med:'Mary rises and goes in haste to visit her cousin Elizabeth in the hill country of Judea. At the sound of Mary\'s greeting, the infant John leaps in his mother\'s womb and Elizabeth is filled with the Holy Spirit. The ark of the new covenant has arrived, carrying within her the Lord of all creation.', scripture:'"Blessed are you among women, and blessed is the fruit of your womb!" — Luke 1:42' },
+      { num:'III', name:'The Nativity',             ref:'Luke 2:1–20',    img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775813891/the_birth_dsvdkv.jpg',   fruit:'Poverty of Spirit', med:'The King of Kings is born in a stable in Bethlehem, wrapped in swaddling clothes, laid in a manger. There is no room in the inn. Angels announce to poor shepherds: "Glory to God in the highest, and on earth peace to people of goodwill." God enters his creation in poverty, silence, and obscurity.', scripture:'"She wrapped him in swaddling clothes and laid him in a manger." — Luke 2:7' },
+      { num:'IV',  name:'The Presentation',         ref:'Luke 2:22–38',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775813891/the_presentation_cvlnty.jpg',   fruit:'Obedience',         med:'Mary and Joseph bring the infant Jesus to the Temple in Jerusalem to present him to the Lord according to the Law of Moses. The old man Simeon takes the child in his arms and recognizes the fulfillment of all his waiting: "Now, Lord, you may dismiss your servant in peace." A sword, he tells Mary, will pierce her own soul.', scripture:'"Now, Master, you may let your servant go in peace." — Luke 2:29' },
+      { num:'V',   name:'Finding in the Temple',    ref:'Luke 2:41–52',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775813890/the_finding_vxhnz0.jpg',   fruit:'Zeal for God',      med:'After three days of anguished searching, Mary and Joseph find the twelve-year-old Jesus in the Temple, sitting among the teachers, listening and asking questions. "Why were you looking for me?" he asks. "Did you not know that I must be in my Father\'s house?" Mary does not fully understand, but she keeps all these things in her heart.', scripture:'"Did you not know that I must be in my Father\'s house?" — Luke 2:49' },
+    ]
+  },
+  luminous: {
+    name: 'Luminous Mysteries', days: 'Thursday', artClass: 'art-luminous',
+    items: [
+      { num:'I',   name:'Baptism in the Jordan',        ref:'Matthew 3:13–17', img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775816443/Baptism_in_the_Jordan_fmqmwh.png', fruit:'Openness to the Holy Spirit', med:'Jesus comes to John at the Jordan River and is baptized. The heavens open, the Spirit descends like a dove, and the voice of the Father rings out: "This is my beloved Son, with whom I am well pleased." The Trinity is revealed for the first time. The mission of the Messiah has begun.', scripture:'"This is my beloved Son, with whom I am well pleased." — Matthew 3:17' },
+      { num:'II',  name:'Wedding at Cana',              ref:'John 2:1–12',    img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775816442/cana-nozze_awoxyr.jpg', fruit:'Do Whatever He Says',         med:'At a wedding feast, Mary notices that the wine has run out and brings the need to her Son. Jesus turns six stone jars of water — perhaps 180 gallons — into the finest wine. This, the first of his signs, manifests his glory, and his disciples believe in him. Mary\'s words to the servants echo down the centuries: "Do whatever he tells you."', scripture:'"Do whatever he tells you." — John 2:5' },
+      { num:'III', name:'Proclamation of the Kingdom', ref:'Mark 1:14–15',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775816442/Proclamation_of_the_Kingdom_otcdpp.jpg', fruit:'Repentance & Trust in God',    med:'Jesus goes through all of Galilee teaching, preaching the Kingdom of God, calling sinners to conversion, forgiving sin, healing the sick, casting out demons, and proclaiming the Beatitudes. He announces a kingdom not of power and conquest but of mercy, poverty of spirit, and sacrificial love.', scripture:'"Repent, and believe in the gospel." — Mark 1:15' },
+      { num:'IV',  name:'The Transfiguration',          ref:'Matthew 17:1–8', img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775816442/The_Transfiguration_ml2uty.jpg', fruit:'Desire for Holiness',          med:'Jesus takes Peter, James, and John to a high mountain. Before their eyes he is transfigured — his face shines like the sun, his garments become dazzling white. Moses and Elijah appear beside him. A bright cloud overshadows them and the Father\'s voice rings out again: "This is my beloved Son. Listen to him."', scripture:'"His face shone like the sun and his clothes became white as light." — Matthew 17:2' },
+      { num:'V',   name:'Institution of the Eucharist', ref:'Luke 22:14–20',  img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775816442/the_last_supper_lwgmyg.jpg', fruit:'Eucharistic Adoration',        med:'At the Last Supper, on the night before his Passion, Jesus takes bread and wine, gives thanks to the Father, and says: "This is my body, given for you. This cup is the new covenant in my blood." He commands the Apostles to do this in his memory. The Eucharist — his body and blood — is the greatest gift ever given.', scripture:'"This is my body, which is given for you. Do this in remembrance of me." — Luke 22:19' },
+    ]
+  },
+  sorrowful: {
+    name: 'Sorrowful Mysteries', days: 'Tuesday & Friday', artClass: 'art-sorrowful',
+    items: [
+      { num:'I',   name:'Agony in the Garden',    ref:'Luke 22:39–46',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942084/Agony_in_the_Garden_pxob80.jpg', fruit:'Contrition for Sin',     med:'After the Last Supper, Jesus goes to the Garden of Gethsemane and kneels in prayer. In agony, his sweat falls like drops of blood to the ground. "Father, if you are willing, take this cup from me — yet not my will, but yours be done." An angel appears to strengthen him. He returns to find his disciples asleep. Three times he prays; three times he submits.', scripture:'"Not my will, but yours be done." — Luke 22:42' },
+      { num:'II',  name:'Scourging at the Pillar', ref:'John 19:1',        img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942083/Scourging_at_the_Pillar_q9tw2i.jpg', fruit:'Mortification',          med:'Pilate, trying to satisfy the crowd without executing Jesus, orders him to be scourged. Jesus is bound to a pillar and beaten with whips. He endures the terrible violence in silence. The prophet Isaiah foretold it: "By his wounds we are healed." He takes upon himself the punishment that was ours.', scripture:'"By his wounds we are healed." — Isaiah 53:5' },
+      { num:'III', name:'Crowning with Thorns',   ref:'Matthew 27:28–30', img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942083/Crowning_with_Thorns_w418wh.jpg', fruit:'Moral Courage',          med:'The Roman soldiers weave a crown of thorns and press it brutally onto the head of Jesus. They dress him in a purple robe, put a reed in his hand, and mock him: "Hail, King of the Jews!" They spit on him and strike him. The King of all creation is mocked and degraded — yet he does not answer with bitterness. He is silent.', scripture:'"Hail, King of the Jews!" — Matthew 27:29' },
+      { num:'IV',  name:'Carrying the Cross',     ref:'Luke 23:26–32',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942084/Carrying_the_Cross_merjnx.jpg', fruit:'Patient Endurance',     med:'Jesus is condemned to death and forced to carry his heavy cross through the streets of Jerusalem toward Calvary. He falls under its weight, not once but three times. Simon of Cyrene is compelled to help him. The women of Jerusalem weep for him. He raises his eyes to them: "Weep not for me, but for yourselves and for your children."', scripture:'"If anyone wishes to come after me, let him take up his cross." — Luke 9:23' },
+      { num:'V',   name:'The Crucifixion',        ref:'John 19:17–30',   img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942084/The_Crucifixion_cetlzc.jpg', fruit:'Salvation & Forgiveness', med:'Jesus is crucified between two criminals on the hill called Golgotha. For three hours he hangs on the cross. He forgives those who crucify him. He promises paradise to the repentant thief. He entrusts his mother to the Beloved Disciple. He cries out in abandonment. He thirsts. Finally: "It is finished." He bows his head and gives up his spirit.', scripture:'"It is finished." — John 19:30' },
+    ]
+  },
+  glorious: {
+    name: 'Glorious Mysteries', days: 'Sunday & Wednesday', artClass: 'art-glorious',
+    items: [
+      { num:'I',   name:'The Resurrection',          ref:'John 20:1–18',    img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942084/Resurrection-of-Jesus_ftz3dt.jpg', fruit:'Faith',                       med:'On the third day, the tomb is empty. Mary Magdalene runs weeping in the garden and encounters a man she takes to be the gardener. He speaks her name — "Mary" — and she recognizes him: "Rabboni!" The risen Christ has conquered death. The same body that was crucified now lives forever in glory. Death is not the end.', scripture:'"I am the resurrection and the life." — John 11:25' },
+      { num:'II',  name:'The Ascension',              ref:'Acts 1:9–11',     img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942084/The_Ascension_csnzz5.jpg', fruit:'Hope & Desire for Heaven',     med:'Forty days after his resurrection, Jesus leads the disciples out to the Mount of Olives. He blesses them, then is lifted up, and a cloud takes him from their sight. Two angels appear: "This same Jesus, who has been taken up from you into heaven, will come again in the same way." He has gone to prepare a place for us.', scripture:'"I go to prepare a place for you." — John 14:2' },
+      { num:'III', name:'Descent of the Holy Spirit', ref:'Acts 2:1–13',     img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942083/At_Pentecost_vcqumc.jpg', fruit:'Gifts of the Holy Spirit',     med:'At Pentecost, Mary and the Apostles are gathered in prayer in the upper room when a mighty wind fills the house and tongues of fire rest on each of them. They are filled with the Holy Spirit and begin to proclaim the Gospel in many languages. Three thousand souls are baptized that day. The Church is born.', scripture:'"They were all filled with the Holy Spirit." — Acts 2:4' },
+      { num:'IV',  name:'The Assumption of Mary',    ref:'Revelation 12:1', img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942083/The_Assumption_of_Mary_lhpqpk.jpg', fruit:'Grace of a Holy Death',        med:'At the end of her earthly life, the Blessed Virgin Mary — who was preserved from all sin from the first moment of her conception — is taken up body and soul into heavenly glory. She shares fully in her Son\'s resurrection, the first fruit of his victory over death. She awaits us there as our mother and intercessor.', scripture:'"A great sign appeared in heaven: a woman clothed with the sun." — Revelation 12:1' },
+      { num:'V',   name:'Coronation of Mary',        ref:'Revelation 12:1', img:'https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775817031/coronation_dmqj1u.jpg', fruit:'Trust in Mary\'s Intercession', med:'In the glory of heaven, Mary, Mother of God and Mother of the Church, is crowned Queen of Heaven and Earth by her Divine Son. She reigns not with power or pride, but with the love of a mother — interceding for all who call upon her name, bringing every prayer before the throne of her Son, and waiting with tenderness for each soul that comes home.', scripture:'"Hail, holy Queen, Mother of Mercy." — Salve Regina' },
+    ]
+  }
+};
+
+let allMysteries = [];
+let currentLbIndex = 0;
+
+function buildGrids() {
+  Object.entries(MYSTERIES).forEach(([key, set]) => {
+    const grid = document.getElementById('grid-' + key);
+    set.items.forEach((m) => {
+      const globalIndex = allMysteries.length;
+      allMysteries.push({ ...m, setName: set.name, setKey: key, artClass: set.artClass });
+
+      const card = document.createElement('div');
+      card.className = 'mystery-card reveal';
+      card.onclick = () => openLightbox(globalIndex);
+      card.innerHTML = `
+        <div class="card-art art-${key}">
+          <div class="card-art-bg"></div>
+          <img class="card-art-img" src="${m.img}" alt="${m.name}" loading="lazy" onerror="this.style.display='none'">
+          <div class="card-art-symbol">
+            <div class="art-verse">${m.ref}</div>
+          </div>
+          <div class="card-overlay"><span class="overlay-text">Open Meditation →</span></div>
+        </div>
+        <div class="card-body">
+          <div class="card-num">${m.num}</div>
+          <div class="card-name">${m.name}</div>
+          <div class="card-ref">${m.ref}</div>
+          <div class="card-med">${m.med.substring(0, 100)}…</div>
+          <span class="card-fruit">${m.fruit}</span>
+        </div>`;
+      grid.appendChild(card);
+    });
+  });
+}
+
+function showSet(key, btn) {
+  document.querySelectorAll('.gf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const sets = document.querySelectorAll('.mystery-set');
+  if (key === 'all') {
+    sets.forEach(s => s.classList.add('active'));
+  } else {
+    sets.forEach(s => s.classList.remove('active'));
+    document.getElementById('set-' + key).classList.add('active');
+  }
+}
+
+function openLightbox(index) {
+  currentLbIndex = index;
+  const m = allMysteries[index];
+  document.getElementById('lbArt').className = 'lb-art ' + m.artClass;
+  // Set lightbox hero image
+  const lbImg = document.getElementById('lbImg');
+  lbImg.src = m.img;
+  lbImg.alt = m.name;
+  lbImg.style.display = 'block';
+  document.getElementById('lbSetLabel').textContent = m.setName;
+  document.getElementById('lbSet').textContent = m.setName;
+  document.getElementById('lbNum').textContent = m.num;
+  document.getElementById('lbName').textContent = m.name;
+  document.getElementById('lbRef').textContent = m.ref;
+  document.getElementById('lbMed').textContent = m.med;
+  document.getElementById('lbFruit').textContent = m.fruit;
+  document.getElementById('lbScriptureText').textContent = m.scripture;
+  document.getElementById('lbPrev').disabled = index === 0;
+  document.getElementById('lbNext').disabled = index === allMysteries.length - 1;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lb-close')) return;
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function navigateLb(dir) {
+  const next = currentLbIndex + dir;
+  if (next >= 0 && next < allMysteries.length) openLightbox(next);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowRight') navigateLb(1);
+  if (e.key === 'ArrowLeft') navigateLb(-1);
+});
+
+buildGrids();
+injectNav('gallery.html');
+</script>
+</body>
+</html>

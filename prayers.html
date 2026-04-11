@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Catholic Prayers — The Complete Prayer Library — The Rosary</title>
+  <meta name="description" content="A complete Catholic prayer library with over 80 prayers across 12 categories — Rosary, Morning, Evening, Marian, Eucharistic, Family prayers, and more."/>
+  <meta property="og:title" content="Catholic Prayers — The Complete Prayer Library"/>
+  <meta property="og:description" content="Browse all Catholic prayers by category."/>
+  <link rel="canonical" href="https://www.therosary.site/prayers.html"/>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    .hub-intro{max-width:680px;margin:0 auto;text-align:center;padding-bottom:3rem}
+
+    .cat-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+      gap:14px;
+      margin-bottom:4rem;
+    }
+
+    .cat-card{
+      background:var(--mid);
+      border:1px solid var(--gold-dim);
+      border-radius:10px;
+      text-decoration:none;
+      display:flex;
+      align-items:center;
+      gap:1rem;
+      padding:1.4rem 1.2rem;
+      transition:border-color .2s,transform .2s;
+    }
+
+    .cat-card:hover{
+      border-color:var(--gold);
+      transform:translateY(-2px);
+    }
+
+    .cat-card-icon{
+      flex-shrink:0;
+      width:56px;
+      height:56px;
+      border-radius:8px;
+      background:rgba(255,255,255,0.05);
+      border:1px solid var(--gold-dim);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .cat-card-icon img{
+      width:36px;
+      height:36px;
+      object-fit:contain;
+      display:block;
+    }
+
+    .cat-card-body{
+      flex:1;
+      min-width:0;
+    }
+
+    .cat-card-name{
+      font-family:'Cinzel',serif;
+      font-size:.78rem;
+      letter-spacing:.12em;
+      color:var(--cream);
+      text-transform:uppercase;
+      margin:0 0 3px;
+    }
+
+    .cat-card-count{
+      font-family:'Cinzel',serif;
+      font-size:.55rem;
+      letter-spacing:.2em;
+      color:var(--gold);
+      text-transform:uppercase;
+      margin:0 0 5px;
+    }
+
+    .cat-card-sample{
+      font-size:.8rem;
+      color:var(--faint);
+      line-height:1.5;
+      font-style:italic;
+      margin:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .cat-card-arrow{
+      font-size:1rem;
+      color:var(--gold);
+      opacity:.3;
+      transition:opacity .2s;
+      flex-shrink:0;
+    }
+
+    .cat-card:hover .cat-card-arrow{opacity:1}
+
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--gold-dim);margin-bottom:3rem}
+    .stat{background:var(--mid);padding:1.5rem;text-align:center}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--gold);line-height:1}
+    .stat-lbl{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-top:.3rem}
+
+    @media(max-width:600px){.stats-row{grid-template-columns:1fr}}
+  </style>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NDQSYWE7SJ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-NDQSYWE7SJ');
+  </script>
+
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="page-banner">
+  <p class="banner-label">A Treasury of Faith</p>
+  <h1 class="banner-title">Catholic <em>Prayers</em></h1>
+  <div class="banner-divider"></div>
+</div>
+
+<div class="page-body">
+
+  <div class="hub-intro reveal">
+    <p class="s-body">A complete library of Catholic prayers — organized by category. Choose a category to see all its prayers, then click any prayer to read the full text, with a share button so you can send it to a friend.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-num">12</div><div class="stat-lbl">Categories</div></div>
+    <div class="stat"><div class="stat-num">87</div><div class="stat-lbl">Prayers</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">Grace Available</div></div>
+  </div>
+
+  <div class="cat-grid">
+
+    <a class="cat-card reveal" href="prayers-rosary.html?img=YOUR_CLOUDINARY_URL/rosary-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775943123/Rosary_Prayers_sxrdpz.jpg" alt="Rosary" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Rosary Prayers</div>
+        <div class="cat-card-count">8 prayers</div>
+        <div class="cat-card-sample">The Apostles' Creed · The Our Father · The Hail Mary…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-morning.html?img=YOUR_CLOUDINARY_URL/morning-sunrise-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Morning_Prayers_wequhn.jpg" alt="Morning Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Morning Prayers</div>
+        <div class="cat-card-count">8 prayers</div>
+        <div class="cat-card-sample">Morning Offering · Act of Faith · Act of Hope…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-evening.html?img=YOUR_CLOUDINARY_URL/moon-evening-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Evening_Prayers_j8l0rb.jpg" alt="Evening Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Evening Prayers</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Evening Prayer · Examination of Conscience · Night Prayer…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-meal.html?img=YOUR_CLOUDINARY_URL/bread-meal-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Prayers_Before_Meals_dryry6.jpg" alt="Meal Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Prayers Before Meals</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Bless Us, O Lord · Family Meal Blessing · Prayer of Gratitude…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-bedtime.html?img=YOUR_CLOUDINARY_URL/stars-bedtime-icon.png">
+      <div class="cat-card-icon">
+        <img src="YOUR_CLOUDINARY_URL/stars-bedtime-icon.png" alt="Bedtime Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Prayers Before Bed</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Prayer Before Sleep · Guardian Angel Prayer · Peaceful Sleep…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-goingout.html?img=YOUR_CLOUDINARY_URL/walking-goingout-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Prayer_Before_Sleep_ocgmbc.jpg" alt="Going Out Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Prayers Before Going Out</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Prayer for Protection · St. Patrick's Breastplate · Traveler's Prayer…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-traditional.html?img=YOUR_CLOUDINARY_URL/cross-traditional-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944674/Traditional_Catholic_Prayers_hfozee.jpg" alt="Traditional Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Traditional Catholic Prayers</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">The Sign of the Cross · The Nicene Creed · The Confiteor…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-saint-joseph.html?img=YOUR_CLOUDINARY_URL/hammer-saint-joseph-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Saint_Joseph_hcq0i4.jpg" alt="Saint Joseph Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Saint Joseph Prayers</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Prayer to Saint Joseph · For Families · For Work…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-marian.html?img=YOUR_CLOUDINARY_URL/rose-marian-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775942083/The_Assumption_of_Mary_lhpqpk.jpg" alt="Marian Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Marian Prayers</div>
+        <div class="cat-card-count">8 prayers</div>
+        <div class="cat-card-sample">The Hail Mary · The Memorare · The Magnificat…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-eucharistic.html?img=YOUR_CLOUDINARY_URL/chalice-eucharistic-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Eucharistic_Prayers_f97cdg.jpg" alt="Eucharistic Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Eucharistic Prayers</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Before Holy Communion · St. Thomas Aquinas · Anima Christi…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-family.html?img=YOUR_CLOUDINARY_URL/home-family-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Family_prayer_l2jzb4.png" alt="Family Prayers" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Family Prayers</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Family Prayer · Prayer for Parents · Prayer for Children…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+    <a class="cat-card reveal" href="prayers-deceased.html?img=YOUR_CLOUDINARY_URL/candle-deceased-icon.png">
+      <div class="cat-card-icon">
+        <img src="https://res.cloudinary.com/dshdzjnh7/image/upload/q_auto/f_auto/v1775944673/Decease_mhoe6c.jpg" alt="Prayers for Deceased" loading="lazy">
+      </div>
+      <div class="cat-card-body">
+        <div class="cat-card-name">Prayers for the Deceased</div>
+        <div class="cat-card-count">7 prayers</div>
+        <div class="cat-card-sample">Eternal Rest · Psalm 130 — De Profundis · For a Deceased Parent…</div>
+      </div>
+      <div class="cat-card-arrow">→</div>
+    </a>
+
+  </div>
+
+</div>
+
+<script>injectNav('prayers.html');</script>
+</body>
+</html>
