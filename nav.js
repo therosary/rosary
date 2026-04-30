@@ -17,6 +17,8 @@ function injectNav(activePage) {
     { href: 'gallery.html',              label: '📿 Gallery',            desc: 'The mysteries in pictures' },
     { href: 'power-of-the-rosary.html',  label: '✝ Power of the Rosary', desc: 'The 15 promises & more' },
     { href: 'prayers.html',              label: '🙏 Prayers',             desc: 'Full Catholic prayer library' },
+    { href: 'about.html',                label: '✦ About',               desc: 'Our mission and story' },
+    { href: 'contact.html',              label: '✉ Contact',             desc: 'Get in touch with us' },
   ];
 
   // All pages (for footer + mobile menu)
@@ -122,7 +124,7 @@ function injectNav(activePage) {
         </div>
         <div class="footer-social">
           <h4>Community</h4>
-          <a href="https://www.facebook.com/YOUR-PAGE-LINK" class="fb-btn" target="_blank" rel="noopener" style="font-size:.58rem;padding:.6rem 1.2rem;">
+          <a href="https://www.facebook.com/Catholicholyrosary" class="fb-btn" target="_blank" rel="noopener" style="font-size:.58rem;padding:.6rem 1.2rem;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
             Facebook Page
           </a>
@@ -135,6 +137,14 @@ function injectNav(activePage) {
       </div>
     </footer>
   `);
+
+  // Load search on every page
+  if (!document.getElementById('searchScript')) {
+    const s = document.createElement('script');
+    s.id = 'searchScript';
+    s.src = 'search.js';
+    document.head.appendChild(s);
+  }
 
   const obs = new IntersectionObserver(entries => {
     entries.forEach(e => {
