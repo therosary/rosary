@@ -218,7 +218,7 @@
       hint.innerHTML = `<span class="shi">⏳</span><span>Building search index…</span>`;
       if (input) input.placeholder = 'Indexing pages, please wait…';
     } else {
-      hint.innerHTML = `<span class="shi">✝</span><span>Search across all ${searchIndex.length} pages</span>`;
+      hint.innerHTML = `<span class="shi">✝</span>`;
       if (input) input.placeholder = 'Search prayers, mysteries, guides…';
     }
   }
@@ -231,7 +231,7 @@
     if (!q || q.length < 2) {
       container.innerHTML = `<div class="search-hint" id="searchHint">
         <span class="shi">${indexReady ? '✝' : '⏳'}</span>
-        <span>${indexReady ? 'Search across all '+searchIndex.length+' pages' : 'Preparing search…'}</span>
+       
       </div>`;
       return;
     }
