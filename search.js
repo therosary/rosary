@@ -76,7 +76,7 @@
   ];
 
   const CACHE_KEY = 'rosary_search_index_v3';
-  const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 hours
+  const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
   let searchIndex = [];
   let indexReady = false;
