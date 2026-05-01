@@ -231,7 +231,7 @@
     if (!q || q.length < 2) {
       container.innerHTML = `<div class="search-hint" id="searchHint">
         <span class="shi">${indexReady ? '✝' : '⏳'}</span>
-        <span>${indexReady ? 'Search across all ' : 'Preparing search…'}</span>
+        <span>${indexReady ? 'Search across all '+searchIndex.length+' pages' : 'Preparing search…'}</span>
       </div>`;
       return;
     }
