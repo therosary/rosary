@@ -1,19 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;500;600&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root {
-  --navy: #0a1622;
-  --deep: #0e1c2b;
-  --mid: #162840;
-  --panel: #1c314d;
+  --navy: #1a2332;
+  --deep: #212d3d;
+  --mid: #2a3a50;
+  --panel: #314560;
 
   --gold: #d4af37;
   --gold-light: #e6c65c;
-  --gold-dim: rgba(212,175,55,0.18);
+  --gold-dim: rgba(212,175,55,0.30);
 
   --cream: #f8f6f0;
-  --warm: #e2d8c3;
-  --muted: #a89f8d;
-  --faint: #5c5345;
+  --warm: #ede7d9;
+  --muted: #ccc4b4;
+  --faint: #9a9080;
 }
 
 html{scroll-behavior:smooth}
@@ -41,7 +41,7 @@ body{font-family:'EB Garamond',serif;background:var(--navy);color:var(--cream);m
 .s-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.42em;color:var(--gold);text-transform:uppercase;margin-bottom:.5rem;display:block}
 .s-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.6rem,3.5vw,2.4rem);line-height:1.2;color:var(--cream);margin-bottom:1rem}
 .s-title em{font-style:italic;color:var(--gold-light)}
-.s-body{font-size:1.05rem;line-height:1.9;color:var(--muted)}
+.s-body{font-size:1.05rem;line-height:1.9;color:var(--warm)}
 .gold-rule{border:none;height:1px;background:linear-gradient(to right,transparent,var(--gold-dim),transparent);margin:2.5rem 0}
 .sidebar-card{background:var(--mid);border:1px solid var(--gold-dim);padding:2rem;margin-bottom:2rem}
 .sidebar-card-title{font-family:'Cinzel',serif;font-size:.68rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--gold-dim)}
@@ -50,16 +50,16 @@ body{font-family:'EB Garamond',serif;background:var(--navy);color:var(--cream);m
 .btn-gold:hover{background:var(--gold-light)}
 .btn-outline{background:transparent;color:var(--gold)}
 .btn-outline:hover{background:var(--gold-dim)}
-.site-footer{background:#070f18;border-top:1px solid var(--gold-dim)}
+.site-footer{background:#161f2c;border-top:1px solid var(--gold-dim)}
 .footer-inner{max-width:1200px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:1.4fr 1fr 1.2fr 0.6fr;gap:2rem}
-.footer-brand p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:var(--faint);margin-top:.5rem}
+.footer-brand p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:var(--muted);margin-top:.5rem}
 .footer-links h4,.footer-social h4{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
 .footer-links ul{list-style:none}
 .footer-links ul li{margin-bottom:.5rem}
-.footer-links ul li a{font-size:.85rem;color:var(--faint);text-decoration:none;transition:color .25s}
+.footer-links ul li a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .25s}
 .footer-links ul li a:hover{color:var(--gold)}
 .footer-bottom{border-top:1px solid rgba(201,168,76,.08);padding:1.2rem 2rem;text-align:center;max-width:1200px;margin:0 auto}
-.footer-bottom p{font-size:.72rem;color:var(--faint);line-height:1.7}
+.footer-bottom p{font-size:.72rem;color:var(--muted);line-height:1.7}
 .reveal{opacity:0;transform:translateY(24px);transition:opacity .75s ease,transform .75s ease}
 .reveal.visible{opacity:1;transform:translateY(0)}
 .fb-btn{display:inline-flex;align-items:center;gap:.6rem;font-family:'Cinzel',serif;font-size:.63rem;letter-spacing:.2em;text-transform:uppercase;padding:.8rem 1.8rem;background:#1877f2;color:#fff;text-decoration:none;transition:background .3s;border:none}
