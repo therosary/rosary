@@ -51,7 +51,7 @@ body{font-family:'EB Garamond',serif;background:var(--navy);color:var(--cream);m
 .btn-outline{background:transparent;color:var(--gold)}
 .btn-outline:hover{background:var(--gold-dim)}
 .site-footer{background:#070f18;border-top:1px solid var(--gold-dim)}
-.footer-inner{max-width:1200px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:2rem}
+.footer-inner{max-width:1200px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:1.4fr 1fr 1.2fr 0.6fr;gap:2rem}
 .footer-brand p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.9rem;color:var(--faint);margin-top:.5rem}
 .footer-links h4,.footer-social h4{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:1rem}
 .footer-links ul{list-style:none}
@@ -70,5 +70,5 @@ body{font-family:'EB Garamond',serif;background:var(--navy);color:var(--cream);m
   .main-nav.open{display:flex}
   .main-nav>li>a{padding:.9rem 2rem;border-bottom:1px solid var(--gold-dim);border-left:none;height:auto}
   .nav-toggle{display:flex}
-  .footer-inner{grid-template-columns:1fr}
+  .footer-inner{grid-template-columns:1fr 1fr}
 }
