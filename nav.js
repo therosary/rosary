@@ -63,6 +63,14 @@ function injectNav(activePage) {
       .di-label{display:block;font-family:'Cinzel',serif;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--warm);margin-bottom:.15rem}
       .di-desc{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:.82rem;color:var(--faint)}
       .dropdown-item:hover .di-label{color:var(--gold)}
+      .audio-panel{margin:2rem 0 1.5rem;padding:1.3rem 1.4rem;border:1px solid rgba(201,168,76,.16);background:rgba(255,255,255,.04);border-radius:9px}
+      .audio-header{display:flex;align-items:center;gap:1rem;margin-bottom:.95rem}
+      .audio-tag{font-size:1.3rem}
+      .audio-title{font-family:'Cinzel',serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.15rem}
+      .audio-subtitle{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--muted)}
+      .audio-link{display:inline-flex;align-items:center;justify-content:center;margin-top:1rem;font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid var(--gold-dim);padding:.7rem 1.1rem;transition:all .25s}
+      .audio-link:hover{background:var(--gold);color:var(--navy)}
+      .audio-panel audio{width:100%;border-radius:8px;background:#091624}
       /* Mobile only items hidden on desktop */
       @media(min-width:769px){.mobile-only{display:none!important}}
       /* Mobile: show all flat, no dropdown button */
@@ -177,6 +185,7 @@ function injectNav(activePage) {
     });
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(r => obs.observe(r));
+  injectAudioWidget(activePage);
 }
 
 
@@ -194,6 +203,64 @@ function injectSiteSchema() {
   s.text = JSON.stringify(schema);
   document.head.appendChild(s);
 }
+
+// ✝ AUDIO LINKS — listen to the prayer directly on the matching prayer page
+const AUDIO_BASES = {
+  legacy: 'https://archive.org/download/the-angelus_202605/',
+  current: 'https://archive.org/download/act-of-faith_202605/',
+};
+function getArchiveAudioUrl(audioData) {
+  if (audioData.url) return audioData.url;
+  const baseKey = audioData.base || 'current';
+  return AUDIO_BASES[baseKey] + encodeURIComponent(audioData.file);
+}
+
+const AUDIO_LINKS = {
+  'prayer-act-of-contrition.html': { title: 'Act of Contrition', file: 'Act of Contrition.mp3', base: 'current', type: 'audio' },
+  'prayer-act-of-faith.html': { title: 'Act of Faith', file: 'Act of Faith.mp3', base: 'current', type: 'audio' },
+  'prayer-act-of-hope.html': { title: 'Act of Hope', file: 'Act of Hope.mp3', base: 'current', type: 'audio' },
+  'prayer-act-of-love.html': { title: 'Act of Love', file: 'Act of Love.mp3', base: 'current', type: 'audio' },
+  'prayer-closing-prayer-of-the-rosary.html': { title: 'Closing Prayer of the Rosary', file: 'Closing Prayer of the Rosary.mp3', base: 'current', type: 'audio' },
+  'prayer-come-holy-spirit.html': { title: 'Come, Holy Spirit', file: 'Come, Holy Spirit.mp3', base: 'current', type: 'audio' },
+  'prayer-morning-offering.html': { title: 'Morning Offering', file: 'Morning Offering.mp3', base: 'current', type: 'audio' },
+  'prayer-short-morning-prayer.html': { title: 'Short Morning Prayer', file: 'Short Morning Prayer.mp3', base: 'current', type: 'audio' },
+  'prayer-the-f-tima-prayer.html': { title: 'The Fátima Prayer', file: 'The Fátima Prayer.mp3', base: 'current', type: 'audio' },
+  'prayer-prayer-to-the-guardian-angel.html': { title: 'Prayer to the Guardian Angel', file: 'prayer to the Guardian Angel.mp3', base: 'current', type: 'audio' },
+  'prayer-prayer-to-our-lady-of-fatima.html': { title: 'Prayer to Our Lady of Fatima', file: 'Prayer to Our Lady of Fatima.mp3', base: 'legacy', type: 'audio' },
+  'prayer-the-angelus.html': { title: 'The Angelus', file: 'The Angelus.mp3', base: 'legacy', type: 'audio' },
+  'prayer-the-apostles-creed.html': { title: "The Apostles' Creed", file: "The Apostles' Creed.mp3", base: 'legacy', type: 'audio' },
+  'prayer-the-glory-be.html': { title: 'The Glory Be', file: 'The Glory Be.mp3', base: 'legacy', type: 'audio' },
+  'prayer-the-hail-holy-queen.html': { title: 'The Hail Holy Queen', file: 'The Hail Holy Queen.mp3', base: 'legacy', type: 'audio' },
+  'prayer-the-magnificat.html': { title: 'The Magnificat', file: 'The Magnificat.mp3', base: 'legacy', type: 'audio' },
+  'prayer-the-memorare.html': { title: 'The Memorare', file: 'The Memorare.mp3', base: 'legacy', type: 'audio' },
+  'prayer-the-our-father.html': { title: 'The Our Father', file: 'The Our Father.mp3', base: 'legacy', type: 'audio' },
+  'prayer-the-hail-mary.html': { title: 'Hail Mary', file: 'Hail Mary.mp3', base: 'legacy', type: 'audio' },
+};
+
+function getCurrentPageFileName() {
+  const fullPath = window.location.pathname || window.location.href;
+  const page = fullPath.substring(fullPath.lastIndexOf('/') + 1).split('?')[0].split('#')[0];
+  return page || 'index.html';
+}
+
+function injectAudioWidget(activePage) {
+  const pageFile = getCurrentPageFileName();
+  const audioData = AUDIO_LINKS[pageFile];
+  if (!audioData) return;
+  const container = document.querySelector('.prayer-page');
+  if (!container) return;
+  const audioUrl = audioData.type === 'audio' ? getArchiveAudioUrl(audioData) : audioData.url;
+  const audioHtml = audioData.type === 'audio'
+    ? `<div class="audio-panel"><div class="audio-header"><span class="audio-tag">🎧</span><div><div class="audio-title">Listen to the prayer</div><div class="audio-subtitle">Audio recording from Archive.org</div></div></div><audio controls preload="metadata" crossorigin="anonymous"><source src="${audioUrl}" type="audio/mpeg">Your browser does not support audio playback.</audio><a class="audio-link" href="${audioUrl}" target="_blank" rel="noopener">Open audio in new tab</a></div>`
+    : `<div class="audio-panel"><div class="audio-header"><span class="audio-tag">🎧</span><div><div class="audio-title">Listen to the prayer</div><div class="audio-subtitle">Audio reference from Archive.org</div></div></div><a class="audio-link" href="${audioUrl}" target="_blank" rel="noopener">Open audio link</a></div>`;
+  const insertBefore = container.querySelector('.prayer-note') || container.querySelector('.share-section');
+  if (insertBefore) {
+    insertBefore.insertAdjacentHTML('beforebegin', audioHtml);
+  } else {
+    container.insertAdjacentHTML('afterbegin', audioHtml);
+  }
+}
+
 
 // ✝ RELATED PRAYERS — call injectRelated(currentPage) on any prayer page
 const PRAYER_CATEGORIES = {
