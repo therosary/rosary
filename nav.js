@@ -5,7 +5,7 @@ function injectNav(activePage) {
   // Main nav items (shown directly on desktop)
   const mainPages = [
     { href: 'index.html',          label: 'Home' },
-    { href: 'how-to-pray.html',    label: 'How to Pray' },
+    { href: 'how-to-pray.html',    label: 'How to Pray the Rosary' },
     { href: 'mystery.html',        label: 'Mystery of the Day' },
     { href: 'reading.html',        label: 'Reading of the Day' },
     { href: 'prayer-request.html', label: 'Prayer Requests' },
@@ -14,11 +14,11 @@ function injectNav(activePage) {
 
   // Grouped under "More ▾" dropdown on desktop
   const morePages = [
-    { href: 'gallery.html',              label: '📿 Gallery',            desc: 'The mysteries in pictures' },
-    { href: 'power-of-the-rosary.html',  label: '✝ Power of the Rosary', desc: 'The 15 promises & more' },
-    { href: 'prayers.html',              label: '🙏 Prayers',             desc: 'Full Catholic prayer library' },
-    { href: 'about.html',                label: '✦ About',               desc: 'Our mission and story' },
-    { href: 'contact.html',              label: '✉ Contact',             desc: 'Get in touch with us' },
+    { href: 'gallery.html',              label: 'Gallery',            desc: 'The mysteries in pictures' },
+    { href: 'power-of-the-rosary.html',  label: 'Power of the Rosary', desc: 'The 15 promises & more' },
+    { href: 'prayers.html',              label: 'Prayers',             desc: 'Full Catholic prayer library' },
+    { href: 'about.html',                label: 'About',               desc: 'Our mission and story' },
+    { href: 'contact.html',              label: 'Contact',             desc: 'Get in touch with us' },
   ];
 
   // All pages (for footer + mobile menu)
@@ -253,7 +253,7 @@ function injectAudioWidget(activePage) {
   const audioHtml = audioData.type === 'audio'
     ? `<div class="audio-panel"><div class="audio-header"><span class="audio-tag">🎧</span><div><div class="audio-title">Listen to the prayer</div><div class="audio-subtitle">Audio recording from Archive.org</div></div></div><audio controls preload="metadata" crossorigin="anonymous"><source src="${audioUrl}" type="audio/mpeg">Your browser does not support audio playback.</audio><a class="audio-link" href="${audioUrl}" target="_blank" rel="noopener">Open audio in new tab</a></div>`
     : `<div class="audio-panel"><div class="audio-header"><span class="audio-tag">🎧</span><div><div class="audio-title">Listen to the prayer</div><div class="audio-subtitle">Audio reference from Archive.org</div></div></div><a class="audio-link" href="${audioUrl}" target="_blank" rel="noopener">Open audio link</a></div>`;
-  const insertBefore = container.querySelector('.prayer-note') || container.querySelector('.share-section');
+  const insertBefore = container.querySelector('.breadcrumb') || container.querySelector('.prayer-body') || container.querySelector('.prayer-note') || container.querySelector('.share-section');
   if (insertBefore) {
     insertBefore.insertAdjacentHTML('beforebegin', audioHtml);
   } else {
