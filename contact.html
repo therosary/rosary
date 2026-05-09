@@ -48,34 +48,36 @@
         <span class="s-label">Send a Message</span>
         <h2 class="s-title" style="margin-bottom:1.5rem">We'd love to <em>hear from you</em></h2>
 
-        <div class="form-group">
-          <label class="form-label" for="contact-name">Your Name</label>
-          <input class="form-input" type="text" id="contact-name" placeholder="Enter your name"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="contact-email">Email Address</label>
-          <input class="form-input" type="email" id="contact-email" placeholder="your@email.com"/>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="contact-subject">Subject</label>
-          <select class="form-select" id="contact-subject">
-            <option value="">Select a subject</option>
-            <option value="prayer">Prayer Request</option>
-            <option value="suggestion">Prayer Suggestion</option>
-            <option value="question">Question about the Rosary</option>
-            <option value="technical">Website Issue</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="contact-message">Message</label>
-          <textarea class="form-textarea" id="contact-message" placeholder="Write your message here…"></textarea>
-        </div>
+        <form id="contactForm" onsubmit="submitContact(event)">
+          <div class="form-group">
+            <label class="form-label" for="contact-name">Your Name</label>
+            <input class="form-input" type="text" id="contact-name" placeholder="Enter your name"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-email">Email Address</label>
+            <input class="form-input" type="email" id="contact-email" placeholder="your@email.com"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-subject">Subject</label>
+            <select class="form-select" id="contact-subject">
+              <option value="">Select a subject</option>
+              <option value="prayer">Prayer Request</option>
+              <option value="suggestion">Prayer Suggestion</option>
+              <option value="question">Question about the Rosary</option>
+              <option value="technical">Website Issue</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="contact-message">Message</label>
+            <textarea class="form-textarea" id="contact-message" placeholder="Write your message here…"></textarea>
+          </div>
 
-        <button class="btn btn-gold" style="width:100%;justify-content:center;display:block;text-align:center" onclick="submitContact()">Send Message</button>
+          <button class="btn btn-gold" style="width:100%;justify-content:center;display:block;text-align:center" type="submit">Send Message</button>
+        </form>
 
-        <div class="success-msg" id="successMsg">
-          <p>✝ Thank you for reaching out. We have received your message and will respond as soon as possible. God bless you.</p>
+        <div class="success-msg" id="successMsg" style="display:none; margin-top:1.5rem;">
+          <p>✝ Thank you for your message. We have received it and will respond as soon as possible. God bless you.</p>
         </div>
       </div>
     </div>
@@ -87,10 +89,9 @@
           <span class="ci-icon">✝</span>
           <span>The Rosary is a Catholic devotional website open to all the faithful worldwide.</span>
         </div>
-        
         <div class="ci-item">
-          <span class="ci-icon">🌐</span>
-          <span>www.therosary.site</span>
+          <span class="ci-icon">✉</span>
+          <span>therosary155@gmail.com</span>
         </div>
       </div>
 
@@ -114,21 +115,66 @@
 </div>
 
 <script>
-function submitContact() {
-  const name = document.getElementById('contact-name').value.trim();
-  const email = document.getElementById('contact-email').value.trim();
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwM4FIeI0VHuo8cL7M4ollhnoE_s8dsD9rij6AF2UYAU0jvqWCSm-hlbxN60TuGxPfrfQ/exec';
+
+async function submitContact(event) {
+  event.preventDefault();
+
+  const name    = document.getElementById('contact-name').value.trim();
+  const email   = document.getElementById('contact-email').value.trim();
+  const subject = document.getElementById('contact-subject').value;
   const message = document.getElementById('contact-message').value.trim();
-  if (!name || !email || !message) {
-    alert('Please fill in your name, email, and message.');
+
+  if (!name || !email || !subject || !message) {
+    alert('Please fill in all fields and select a subject.');
     return;
   }
-  // Show success message
-  document.getElementById('successMsg').style.display = 'block';
-  document.getElementById('contact-name').value = '';
-  document.getElementById('contact-email').value = '';
-  document.getElementById('contact-message').value = '';
-  document.getElementById('contact-subject').value = '';
+
+  const btn = event.target.querySelector('button[type="submit"]');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  document.getElementById('successMsg').style.display = 'none';
+
+  // Build the payload — id, status, and submittedAt are all set here
+  // so they arrive in the POST body and addRow() maps them to the
+  // correct columns using the sheet headers automatically.
+  const payload = {
+    id:          'contact_' + Date.now(),   // unique ID e.g. contact_1746789123456
+    name:        name,
+    email:       email,
+    subject:     subject,
+    message:     message,
+    status:      'new',                     // default status for every new message
+    submittedAt: new Date().toISOString()   // UTC timestamp e.g. 2026-05-09T14:32:01.000Z
+  };
+
+  try {
+    // Google Apps Script requires mode:'no-cors' for browser POST requests.
+    // With no-cors the response is opaque (unreadable), so we treat
+    // any network success as a successful submission.
+    await fetch(BACKEND_URL, {
+      method:  'POST',
+      mode:    'no-cors',                   // ← fixes the CORS error
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ action: 'addContactMessage', payload })
+    });
+
+    // Reset form and show confirmation
+    document.getElementById('contactForm').reset();
+    document.getElementById('successMsg').style.display = 'block';
+    window.scrollTo({
+      top:      document.getElementById('successMsg').offsetTop - 60,
+      behavior: 'smooth'
+    });
+
+  } catch (err) {
+    alert('There was a problem sending your message. Please try again.');
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = 'Send Message';
+  }
 }
+
 injectNav('contact.html');
 </script>
 </body>

@@ -142,13 +142,21 @@
   
 </head>
 <body>
+<div id="pw-lock-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.95);color:#fff;z-index:9999;padding:1rem;">
+  <form id="pw-form" style="width:100%;max-width:420px;background:#0c1a28;border:1px solid rgba(201,168,76,.3);padding:2rem;border-radius:8px;box-shadow:0 0 40px rgba(0,0,0,.4);">
+    <input id="pw-input" type="password" autocomplete="current-password" style="width:100%;padding:.9rem;margin-bottom:1rem;border:1px solid rgba(201,168,76,.3);border-radius:4px;background:#0a1724;color:#fff;outline:none;" aria-label="Password" />
+    <button type="submit" style="width:100%;padding:.95rem;background:#c9a84c;color:#0c1a28;border:none;border-radius:4px;font-weight:700;cursor:pointer;" aria-label="Submit password"></button>
+  </form>
+</div>
+<div id="page-shell" style="visibility:hidden;">
 <div class="top-bar"></div>
 
 <div class="header">
   <span class="logo">✝ THE ROSARY <span>Prayer Admin</span></span>
   <div class="header-links">
     <a href="prayer-request.html">Prayer Page →</a>
-    <a href="admin.html">Shop Admin →</a>
+    <a href="rosaryadmin2026.html">Shop Admin →</a>
+    <a href="contact-admin.html">Contact Admin →</a>
     <a href="index.html">← Home</a>
   </div>
 </div>
@@ -226,7 +234,7 @@
 
 <script>
 // ── PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE ──
-const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbzDyM55F1l2ltzvfz0R6dSEmsw2gZOukFgYMfu5voWRNFvf5Kklu2rWni3hRw5sYIgz6w/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycby735wRdH6d-x5EqNM_A7I6GSL-MSFK6zOJsJLZxwQRBSkiM1YU9NKk56maJkfXwq4h/exec';
 
 let intentions = [], currentTab = 'pending', searchQ = '', selected = new Set();
 
@@ -462,5 +470,24 @@ function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').
 
 loadIntentions();
 </script>
+<script>
+(function(){
+  var shell=document.getElementById('page-shell');
+  var gate=document.getElementById('pw-lock-screen');
+  var input=document.getElementById('pw-input');
+  var error=document.getElementById('pw-error');
+  document.getElementById('pw-form').addEventListener('submit', function(evt){
+    evt.preventDefault();
+    if(input.value === 'mylovefortherosary'){
+      shell.style.visibility='visible';
+      gate.style.display='none';
+    } else {
+      window.location.href = 'how-to-pray.html';
+    }
+  });
+  input.focus();
+})();
+</script>
+</div>
 </body>
 </html>

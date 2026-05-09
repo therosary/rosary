@@ -5,9 +5,10 @@
  *
  * 1. Go to https://sheets.google.com and create a NEW spreadsheet
  * 2. Rename it "The Rosary Backend"
- * 3. Create TWO sheets (tabs at the bottom):
+ * 3. Create THREE sheets (tabs at the bottom):
  *    - Rename "Sheet1" to:  Products
  *    - Click the + button, name the new sheet:  Intentions
+ *    - Click the + button again, name the new sheet:  ContactMessages
  *
  * 4. In the "Products" sheet, add these headers in Row 1:
  *    id | name | category | desc | link | imgUrl | featured | addedAt
@@ -15,7 +16,10 @@
  * 5. In the "Intentions" sheet, add these headers in Row 1:
  *    id | name | category | intention | anonymous | shareConsent | status | submittedAt
  *
- * 6. In the spreadsheet, click Extensions → Apps Script
+ * 6. In the "ContactMessages" sheet, add these headers in Row 1:
+ *    id | name | email | subject | message | status | submittedAt
+ *
+ * 7. In the spreadsheet, click Extensions → Apps Script
  * 7. Delete all existing code. Paste THIS entire file.
  * 8. Click Save (floppy disk icon)
  * 9. Click Deploy → New Deployment
@@ -25,7 +29,7 @@
  * 13. Click Deploy → Authorize → Allow
  * 14. COPY the Web App URL shown — it looks like:
  *     https://script.google.com/macros/s/XXXXXXX/exec
- * 15. Paste that URL into your shop.html and prayer-request.html
+ * 15. Paste that URL into your shop.html, prayer-request.html, contact.html, and contact-admin.html
  *     where it says: const BACKEND_URL = 'PASTE_YOUR_URL_HERE';
  *
  * That's it! Your website will now read/write to Google Sheets.
@@ -49,6 +53,9 @@ function doGet(e) {
       const pub = all.filter(r => r.status === 'approved' && r.shareConsent === 'true');
       return respond(pub);
     }
+    if (action === 'getContactMessages') {
+      return respond(getRows('ContactMessages'));
+    }
     return respond({ error: 'Unknown action' });
   } catch(err) {
     return respond({ error: err.message });
@@ -62,6 +69,9 @@ function doPost(e) {
 
     if (action === 'addIntention') {
       return respond(addRow('Intentions', data.payload));
+    }
+    if (action === 'addContactMessage') {
+      return respond(addRow('ContactMessages', data.payload));
     }
     if (action === 'addProduct') {
       return respond(addRow('Products', data.payload));
@@ -82,6 +92,14 @@ function doPost(e) {
   } catch(err) {
     return respond({ error: err.message });
   }
+}
+
+// ── Handle OPTIONS for CORS preflight ──
+function doOptions(e) {
+  return HtmlService
+    .createHtmlOutput('')
+    .setMimeType('text/plain')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 // ── Helper: get all rows as array of objects ──
@@ -159,7 +177,9 @@ function deleteRow(sheetName, id) {
 
 // ── Helper: return JSON response with CORS headers ──
 function respond(data) {
-  return ContentService
-    .createTextOutput(JSON.stringify(data))
-    .setMimeType(ContentService.MimeType.JSON);
+  const json = JSON.stringify(data);
+  return HtmlService
+    .createHtmlOutput(json)
+    .setMimeType('application/json')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }

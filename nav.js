@@ -166,7 +166,7 @@ function injectNav(activePage) {
 
       </div>
       <div class="footer-bottom">
-        <p>As an Amazon Associate, this site earns from qualifying purchases at no extra cost to you. &nbsp;·&nbsp; © ${new Date().getFullYear()} The Rosary &nbsp;·&nbsp; All rights reserved.</p>
+        <p>As an Amazon Associate, this site earns from qualifying purchases at no extra cost to you. &nbsp;·&nbsp; © ${new Date().getFullYear()} The Rosary &nbsp;·&nbsp; All rights reserved. &nbsp;·&nbsp; <a href="rosaryadmin2026.html" style="color:var(--gold);text-decoration:none;font-size:1.2em;">★</a></p>
       </div>
     </footer>
   `);
