@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Liturgical Calendar — The Rosary</title>
+  <link rel="stylesheet" href="shared.css"/>
+  <style>
+    /* Season legend */
+    .leg{display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:1.5rem}
+    .leg-item{display:flex;align-items:center;gap:.35rem;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+    .leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+    /* Month nav */
+    .cal-nav{display:flex;align-items:center;gap:.8rem;margin-bottom:1.2rem;flex-wrap:wrap}
+    .nav-btn{background:none;border:1px solid var(--gold-dim);color:var(--gold);width:32px;height:32px;cursor:pointer;font-size:.95rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s}
+    .nav-btn:hover{background:var(--deep)}
+    .nav-label{font-weight:700;font-size:1rem;color:var(--cream);flex:1;min-width:150px}
+    .nav-today{font-size:.57rem;letter-spacing:.17em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold-dim);background:none;padding:.32rem .85rem;cursor:pointer;transition:background .2s}
+    .nav-today:hover{background:var(--deep)}
+
+    /* Grid */
+    .cal-wrap{border:1px solid var(--gold-dim);overflow:hidden;margin-bottom:1rem}
+    .cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+    .cal-head{background:var(--deep);padding:.45rem .2rem;text-align:center;font-size:.53rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border-right:1px solid var(--gold-dim)}
+    .cal-head:last-child{border-right:none}
+    .cal-cell{min-height:88px;padding:.4rem .45rem;border-right:1px solid var(--gold-dim);border-top:1px solid var(--gold-dim);cursor:pointer;transition:background .15s;position:relative;vertical-align:top}
+    .cal-cell:nth-child(7n){border-right:none}
+    .cal-cell:hover{background:var(--deep)}
+    .cal-cell.empty{cursor:default;opacity:.4;background:var(--navy)}
+    .cal-cell.is-today{box-shadow:inset 0 0 0 2px var(--gold)}
+    .cal-cell.selected{background:var(--deep)}
+
+    /* Season color bar top of each cell */
+    .cal-cell::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:transparent}
+    .s-advent::before,.s-lent::before{background:#7B3F9E}
+    .s-christmas::before{background:#C9A84C}
+    .s-easter::before{background:#B8860B}
+    .s-ordinary::before{background:#2E6B2E}
+
+    .cnum{font-size:.68rem;font-weight:700;color:var(--muted);margin-bottom:.22rem;display:flex;justify-content:space-between}
+    .cal-cell.is-today .cnum{color:var(--gold)}
+    .today-pip{width:5px;height:5px;border-radius:50%;background:var(--gold);display:inline-block}
+
+    /* Feast chips inside cells */
+    .chip{font-size:.54rem;line-height:1.3;padding:.12rem .32rem;margin-bottom:.12rem;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border-radius:2px}
+    .chip.SOL{background:rgba(201,168,76,.2);color:#6b4c00;font-weight:700}
+    .chip.FEA{background:rgba(34,34,34,.08);color:var(--warm)}
+    .chip.MEM{background:rgba(34,34,34,.04);color:var(--muted)}
+    .chip.OPT{color:var(--muted);font-style:italic}
+
+    /* Detail panel */
+    .detail{background:var(--mid);border:1px solid var(--gold-dim);padding:1.6rem;margin-bottom:1.2rem}
+    .detail-empty{text-align:center;padding:2rem 1rem}
+    .detail-empty span{font-size:1.8rem;opacity:.15;display:block;margin-bottom:.7rem}
+    .detail-empty p{font-size:.83rem;color:var(--muted);line-height:1.7}
+    .d-date{font-size:.57rem;letter-spacing:.27em;text-transform:uppercase;color:var(--gold);margin-bottom:.55rem}
+    .d-img{width:100%;max-height:180px;object-fit:cover;object-position:top;margin-bottom:.9rem;border:1px solid var(--gold-dim);display:block}
+    .d-name{font-weight:700;font-size:1.05rem;color:var(--cream);line-height:1.25;margin-bottom:.45rem}
+    .d-badge{display:inline-block;font-size:.53rem;letter-spacing:.18em;text-transform:uppercase;padding:.18rem .6rem;border:1px solid var(--gold-dim);color:var(--gold);margin-bottom:.75rem}
+    .d-quote{font-style:italic;font-size:.88rem;color:var(--warm);line-height:1.75;border-left:2px solid var(--gold-dim);padding-left:.9rem;margin-bottom:.85rem}
+    .d-desc{font-size:.83rem;color:var(--muted);line-height:1.8;margin-bottom:.9rem}
+    .d-links{display:flex;gap:.35rem;flex-wrap:wrap}
+    .d-link{font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);text-decoration:none;border:1px solid var(--gold-dim);padding:.32rem .65rem;transition:background .2s}
+    .d-link:hover{background:var(--deep)}
+
+    .season-note{font-size:.78rem;color:var(--muted);margin-bottom:1rem}
+
+    @media(max-width:700px){
+      .cal-cell{min-height:56px;padding:.3rem .25rem}
+      .chip.MEM,.chip.OPT{display:none}
+      .detail{padding:1.1rem}
+    }
+    @media(max-width:420px){
+      .cal-head{font-size:.46rem;padding:.4rem .1rem}
+      .cnum{font-size:.6rem}
+      .chip{display:none}
+      .chip.SOL{display:block;font-size:.47rem}
+    }
+  </style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NDQSYWE7SJ"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-NDQSYWE7SJ');</script>
+</head>
+<body>
+<script src="nav.js"></script>
+
+<div class="page-banner">
+  <p class="banner-label">✝ The Roman Rite</p>
+  <h1 class="banner-title">Liturgical <em>Calendar</em></h1>
+  <div class="banner-divider"></div>
+</div>
+
+<div class="page-body">
+  <div class="two-col">
+
+    <div>
+      <div class="reveal">
+        <!-- Legend -->
+        <div class="leg">
+          <div class="leg-item"><span class="leg-dot" style="background:#7B3F9E"></span>Advent &amp; Lent</div>
+          <div class="leg-item"><span class="leg-dot" style="background:#C9A84C"></span>Christmas</div>
+          <div class="leg-item"><span class="leg-dot" style="background:#B8860B"></span>Easter</div>
+          <div class="leg-item"><span class="leg-dot" style="background:#2E6B2E"></span>Ordinary Time</div>
+        </div>
+
+        <!-- Nav -->
+        <div class="cal-nav">
+          <button class="nav-btn" id="prevBtn">‹</button>
+          <span class="nav-label" id="monthLabel"></span>
+          <button class="nav-btn" id="nextBtn">›</button>
+          <button class="nav-today" id="todayBtn">Today</button>
+        </div>
+
+        <p class="season-note" id="seasonNote"></p>
+
+        <!-- Grid -->
+        <div class="cal-wrap">
+          <div class="cal-grid" id="calGrid">
+            <div class="cal-head">Sun</div><div class="cal-head">Mon</div><div class="cal-head">Tue</div>
+            <div class="cal-head">Wed</div><div class="cal-head">Thu</div><div class="cal-head">Fri</div><div class="cal-head">Sat</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <!-- Detail panel -->
+      <div class="detail reveal" id="detailPanel">
+        <div id="detailEmpty" class="detail-empty">
+          <span>✝</span>
+          <p>Tap any day to see its feast, saint, and liturgical information.</p>
+        </div>
+        <div id="detailContent" style="display:none">
+          <p class="d-date" id="dDate"></p>
+          <img class="d-img" id="dImg" src="" alt="" style="display:none"/>
+          <p class="d-name" id="dName"></p>
+          <span class="d-badge" id="dBadge"></span>
+          <blockquote class="d-quote" id="dQuote" style="display:none"></blockquote>
+          <p class="d-desc" id="dDesc"></p>
+          <div class="d-links" id="dLinks"></div>
+        </div>
+      </div>
+
+    
+
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Saint of the Day</div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;margin-bottom:1rem">Read today's full saint profile, biography, and spiritual reflection.</p>
+        <a href="saint-of-the-day.html" class="btn btn-outline" style="width:100%;text-align:center;display:block">Saint of the Day →</a>
+      </div>
+
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Pray the Rosary</div>
+        <p style="font-size:.85rem;color:var(--muted);line-height:1.7;margin-bottom:1rem">Each liturgical season calls us to pray the mysteries of the Rosary.</p>
+        <a href="mystery.html" class="btn btn-gold" style="width:100%;text-align:center;display:block">Mystery of the Day →</a>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<script>
+const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const today=new Date(); today.setHours(0,0,0,0);
+let vY=today.getFullYear(), vM=today.getMonth();
+
+function rl(t){
+  if(!t)return'Feast Day';const u=t.toUpperCase();
+  if(u.includes('SOLEMNITY'))return'Solemnity';
+  if(u.includes('OPTIONAL'))return'Optional Memorial';
+  if(u.includes('MEMORIAL'))return'Memorial';
+  if(u.includes('FEAST'))return'Feast';
+  if(u.includes('COMMEMORATION'))return'Commemoration';
+  return t;
+}
+function chipClass(t){
+  if(!t)return'FEA';const u=t.toUpperCase();
+  if(u.includes('SOLEMNITY'))return'SOL';
+  if(u.includes('OPTIONAL'))return'OPT';
+  if(u.includes('MEMORIAL'))return'MEM';
+  return'FEA';
+}
+function seasonCls(s){
+  if(!s)return's-ordinary';const u=s.toLowerCase();
+  if(u.includes('advent'))return's-advent';
+  if(u.includes('christmas'))return's-christmas';
+  if(u.includes('lent')||u.includes('holy week'))return's-lent';
+  if(u.includes('easter'))return's-easter';
+  return's-ordinary';
+}
+
+// Same built-in data as saint-of-the-day page
+const SAINTS={
+  1:[{day:1,name:'Solemnity of Mary, Mother of God',type:'SOLEMNITY',desc:'The Church celebrates Mary as Theotokos — God-bearer — the Mother of Our Lord Jesus Christ.'},{day:2,name:'Sts. Basil the Great & Gregory Nazianzen',type:'MEMORIAL',desc:'Two Doctors of the Church who defended the faith against Arianism in the 4th century.'},{day:4,name:'St. Elizabeth Ann Seton',type:'MEMORIAL',desc:'First native-born American saint, founder of the first free Catholic school in America.'},{day:5,name:'St. John Neumann',type:'MEMORIAL',desc:'Bishop of Philadelphia, first American male saint.'},{day:6,name:'St. André Bessette',type:'OPTIONAL',desc:'Holy Cross brother known for devotion to St. Joseph and the gift of healing.'},{day:7,name:'St. Raymond of Penyafort',type:'OPTIONAL',desc:'Dominican friar and canonist.'},{day:13,name:'St. Hilary of Poitiers',type:'OPTIONAL',desc:'Doctor of the Church called the "Athanasius of the West."'},{day:17,name:'St. Anthony, Abbot',type:'MEMORIAL',desc:'Father of monasticism who lived as a hermit in the Egyptian desert.'},{day:20,name:'St. Fabian',type:'OPTIONAL',desc:'Pope and martyr.'},{day:21,name:'St. Agnes',type:'MEMORIAL',desc:'Young Roman martyr. Patron of girls.'},{day:22,name:'St. Vincent, Deacon & Martyr',type:'OPTIONAL',desc:'Deacon of Saragossa martyred under Diocletian.'},{day:24,name:'St. Francis de Sales',type:'MEMORIAL',desc:'Bishop and Doctor of the Church, patron of writers and journalists.'},{day:25,name:'Conversion of St. Paul',type:'FEAST',desc:'The dramatic conversion of Saul of Tarsus on the road to Damascus.'},{day:26,name:'Sts. Timothy & Titus',type:'MEMORIAL',desc:'Beloved disciples of St. Paul.'},{day:27,name:'St. Angela Merici',type:'OPTIONAL',desc:'Founder of the Ursulines.'},{day:28,name:'St. Thomas Aquinas',type:'MEMORIAL',desc:'Greatest theologian of the Church. Doctor Angelicus.'},{day:31,name:'St. John Bosco',type:'MEMORIAL',desc:'Apostle of youth, founder of the Salesians.'}],
+  2:[{day:2,name:'Presentation of the Lord',type:'FEAST',desc:'Jesus presented in the Temple. Simeon proclaimed him "a light to the Gentiles."'},{day:3,name:'St. Blaise',type:'OPTIONAL',desc:'Bishop and martyr. Patron of those with throat ailments.'},{day:5,name:'St. Agatha',type:'MEMORIAL',desc:'Sicilian martyr who endured torture for her faith.'},{day:6,name:'Sts. Paul Miki & Companions',type:'MEMORIAL',desc:'26 martyrs of Japan crucified in 1597.'},{day:10,name:'St. Scholastica',type:'MEMORIAL',desc:'Twin sister of St. Benedict, first Benedictine nun.'},{day:11,name:'Our Lady of Lourdes',type:'OPTIONAL',desc:'Marian apparitions to Bernadette Soubirous in 1858.'},{day:14,name:'Sts. Cyril & Methodius',type:'MEMORIAL',desc:'Apostles to the Slavs.'},{day:17,name:'Seven Founders of the Servite Order',type:'OPTIONAL',desc:'Founders of the Order of Servants of Mary.'},{day:21,name:'St. Peter Damian',type:'OPTIONAL',desc:'Cardinal and Doctor of the Church.'},{day:22,name:'Chair of St. Peter',type:'FEAST',desc:'Celebrates the authority of Peter as head of the Church.'},{day:23,name:'St. Polycarp',type:'MEMORIAL',desc:'Bishop of Smyrna, disciple of St. John, burned at the stake.'}],
+  3:[{day:4,name:'St. Casimir',type:'OPTIONAL',desc:'Prince of Poland, patron of Poland and Lithuania.'},{day:7,name:'Sts. Perpetua & Felicity',type:'MEMORIAL',desc:'Martyred in Carthage in 203 AD.'},{day:8,name:'St. John of God',type:'OPTIONAL',desc:'Founder of the Brothers Hospitallers.'},{day:9,name:'St. Frances of Rome',type:'OPTIONAL',desc:'Roman noblewoman and mystic, patroness of Rome.'},{day:17,name:'St. Patrick',type:'OPTIONAL',desc:'Apostle of Ireland.'},{day:18,name:'St. Cyril of Jerusalem',type:'OPTIONAL',desc:'Bishop and Doctor of the Church.'},{day:19,name:'St. Joseph, Spouse of the Blessed Virgin Mary',type:'SOLEMNITY',desc:'Patron of the Universal Church, guardian of the Holy Family.'},{day:25,name:'Annunciation of the Lord',type:'SOLEMNITY',desc:'The Angel Gabriel announces to Mary that she will conceive the Son of God.'}],
+  4:[{day:2,name:'St. Francis of Paola',type:'OPTIONAL',desc:'Founder of the Minim Friars.'},{day:4,name:'St. Isidore of Seville',type:'OPTIONAL',desc:'Archbishop and Doctor of the Church, patron of the internet.'},{day:5,name:'St. Vincent Ferrer',type:'OPTIONAL',desc:'Dominican friar and great preacher.'},{day:7,name:'St. John Baptist de la Salle',type:'MEMORIAL',desc:'Founder of the Brothers of the Christian Schools.'},{day:11,name:'St. Stanislaus',type:'MEMORIAL',desc:'Bishop of Kraków, patron of Poland.'},{day:21,name:'St. Anselm',type:'OPTIONAL',desc:'Archbishop of Canterbury and Doctor of the Church.'},{day:23,name:'St. George',type:'OPTIONAL',desc:'Soldier and martyr. Patron of England.'},{day:25,name:'St. Mark, Evangelist',type:'FEAST',desc:'Author of the second Gospel. Patron of Venice.'},{day:28,name:'St. Peter Chanel',type:'OPTIONAL',desc:'First martyr of the Pacific islands.'},{day:29,name:'St. Catherine of Siena',type:'MEMORIAL',desc:'Doctor of the Church who convinced Pope Gregory XI to return to Rome.'},{day:30,name:'St. Pius V',type:'OPTIONAL',desc:'Dominican pope who standardized the Latin Mass.'}],
+  5:[{day:1,name:'St. Joseph the Worker',type:'OPTIONAL',desc:'Patron of workers. The dignity of human labor.'},{day:2,name:'St. Athanasius',type:'MEMORIAL',desc:'"Athanasius contra mundum" — defender of Christ\'s divinity.'},{day:3,name:'Sts. Philip & James, Apostles',type:'FEAST',desc:'Philip and James the Less, first bishop of Jerusalem.'},{day:10,name:'St. Damien de Veuster',type:'OPTIONAL',desc:'Priest who served the lepers of Molokai.'},{day:11,name:'Sts. Nereus & Achilleus',type:'OPTIONAL',desc:'Roman soldier martyrs.'},{day:12,name:'St. Pancras',type:'OPTIONAL',desc:'Fourteen-year-old martyr. Patron of children.'},{day:13,name:'Our Lady of Fatima',type:'OPTIONAL',desc:'Apparitions at Fatima in 1917.'},{day:14,name:'St. Matthias, Apostle',type:'FEAST',desc:'Chosen to replace Judas among the Twelve.'},{day:15,name:'St. Isidore the Farmer',type:'OPTIONAL',desc:'Patron of farmers.'},{day:20,name:'St. Bernardine of Siena',type:'OPTIONAL',desc:'Promoted devotion to the Holy Name of Jesus.'},{day:22,name:'St. Rita of Cascia',type:'OPTIONAL',desc:'Patroness of impossible causes.'},{day:25,name:'St. Bede the Venerable',type:'OPTIONAL',desc:'"Father of English History," Doctor of the Church.'},{day:26,name:'St. Philip Neri',type:'MEMORIAL',desc:'Apostle of Rome, founder of the Oratorians.'},{day:27,name:'St. Augustine of Canterbury',type:'OPTIONAL',desc:'First Archbishop of Canterbury.'},{day:31,name:'Visitation of the Blessed Virgin Mary',type:'FEAST',desc:'Mary visits Elizabeth. John leaps for joy. The Magnificat.'}],
+  6:[{day:1,name:'St. Justin Martyr',type:'MEMORIAL',desc:'Early Christian philosopher and apologist.'},{day:2,name:'Sts. Marcellinus & Peter',type:'OPTIONAL',desc:'Martyred in Rome under Diocletian.'},{day:3,name:'Sts. Charles Lwanga & Companions',type:'MEMORIAL',desc:'Twenty-two Ugandan martyrs, 1886.'},{day:5,name:'St. Boniface',type:'MEMORIAL',desc:'Apostle of Germany.'},{day:9,name:'St. Ephrem',type:'OPTIONAL',desc:'"Harp of the Holy Spirit," Syriac Doctor of the Church.'},{day:11,name:'St. Barnabas, Apostle',type:'MEMORIAL',desc:'Companion of St. Paul.'},{day:13,name:'St. Anthony of Padua',type:'MEMORIAL',desc:'Doctor of the Church, patron of lost articles.'},{day:21,name:'St. Aloysius Gonzaga',type:'MEMORIAL',desc:'Young Jesuit, patron of youth and students.'},{day:24,name:'Nativity of St. John the Baptist',type:'SOLEMNITY',desc:'Forerunner of the Lord. One of three birthdays celebrated liturgically.'},{day:28,name:'St. Irenaeus',type:'MEMORIAL',desc:'Bishop of Lyons, early Church Father.'},{day:29,name:'Sts. Peter & Paul, Apostles',type:'SOLEMNITY',desc:'The twin pillars of the Church.'},{day:30,name:'First Martyrs of the Holy Roman Church',type:'OPTIONAL',desc:'Christians burned by Nero after the great fire of Rome.'}],
+  7:[{day:3,name:'St. Thomas, Apostle',type:'FEAST',desc:'"My Lord and my God!" Patron of India.'},{day:4,name:'St. Elizabeth of Portugal',type:'OPTIONAL',desc:'Queen of Portugal, patroness of peace.'},{day:6,name:'St. Maria Goretti',type:'OPTIONAL',desc:'Martyr of purity. Patron of youth.'},{day:11,name:'St. Benedict, Abbot',type:'MEMORIAL',desc:'Father of Western monasticism, patron of Europe.'},{day:13,name:'St. Henry',type:'OPTIONAL',desc:'Holy Roman Emperor and Church reformer.'},{day:14,name:'St. Kateri Tekakwitha',type:'MEMORIAL',desc:'First Native American saint.'},{day:15,name:'St. Bonaventure',type:'MEMORIAL',desc:'Franciscan, the "Seraphic Doctor."'},{day:16,name:'Our Lady of Mount Carmel',type:'OPTIONAL',desc:'Our Lady\'s relationship with the Carmelite order.'},{day:22,name:'St. Mary Magdalene',type:'FEAST',desc:'First witness to the Resurrection.'},{day:23,name:'St. Bridget of Sweden',type:'OPTIONAL',desc:'Foundress of the Brigittines and great mystic.'},{day:25,name:'St. James, Apostle',type:'FEAST',desc:'First apostle martyred. Patron of Spain.'},{day:26,name:'Sts. Joachim & Anne',type:'MEMORIAL',desc:'Grandparents of Jesus.'},{day:29,name:'Sts. Martha, Mary & Lazarus',type:'MEMORIAL',desc:'The beloved family of Bethany.'},{day:31,name:'St. Ignatius of Loyola',type:'MEMORIAL',desc:'Founder of the Jesuits.'}],
+  8:[{day:1,name:'St. Alphonsus Liguori',type:'MEMORIAL',desc:'Founder of the Redemptorists, patron of confessors.'},{day:4,name:'St. John Vianney',type:'MEMORIAL',desc:'Curé of Ars, patron of parish priests.'},{day:6,name:'Transfiguration of the Lord',type:'FEAST',desc:'Jesus revealed his divine glory on Mount Tabor.'},{day:8,name:'St. Dominic',type:'MEMORIAL',desc:'Founder of the Order of Preachers.'},{day:9,name:'St. Teresa Benedicta of the Cross',type:'OPTIONAL',desc:'Edith Stein, martyr of Auschwitz. Co-patron of Europe.'},{day:10,name:'St. Lawrence, Deacon & Martyr',type:'FEAST',desc:'Martyred on a gridiron. Patron of deacons and cooks.'},{day:11,name:'St. Clare of Assisi',type:'MEMORIAL',desc:'Founder of the Poor Clares.'},{day:14,name:'St. Maximilian Kolbe',type:'MEMORIAL',desc:'Died in place of a stranger at Auschwitz.'},{day:15,name:'Assumption of the Blessed Virgin Mary',type:'SOLEMNITY',desc:'Mary taken up body and soul into heaven. Holy Day of Obligation.'},{day:20,name:'St. Bernard of Clairvaux',type:'MEMORIAL',desc:'"Last of the Fathers," Doctor of the Church.'},{day:21,name:'St. Pius X',type:'MEMORIAL',desc:'Pope who reformed the liturgy and encouraged daily Communion.'},{day:22,name:'Queenship of the Blessed Virgin Mary',type:'MEMORIAL',desc:'Mary honored as Queen of Heaven.'},{day:24,name:'St. Bartholomew, Apostle',type:'FEAST',desc:'One of the Twelve. Patron of Armenia.'},{day:27,name:'St. Monica',type:'MEMORIAL',desc:'Mother of St. Augustine.'},{day:28,name:'St. Augustine of Hippo',type:'MEMORIAL',desc:'Greatest Latin Church Father.'},{day:29,name:'Martyrdom of St. John the Baptist',type:'MEMORIAL',desc:'Beheaded by order of Herod.'}],
+  9:[{day:3,name:'St. Gregory the Great',type:'MEMORIAL',desc:'Pope who gave his name to Gregorian chant.'},{day:8,name:'Nativity of the Blessed Virgin Mary',type:'FEAST',desc:'The birth of Mary, conceived without sin.'},{day:9,name:'St. Peter Claver',type:'MEMORIAL',desc:'Jesuit priest who ministered to enslaved Africans.'},{day:13,name:'St. John Chrysostom',type:'MEMORIAL',desc:'"Golden-mouthed" Doctor of the Church.'},{day:14,name:'Exaltation of the Holy Cross',type:'FEAST',desc:'The finding of the True Cross by St. Helena.'},{day:15,name:'Our Lady of Sorrows',type:'MEMORIAL',desc:'Mary\'s seven sorrows, including standing at the Cross.'},{day:16,name:'Sts. Cornelius & Cyprian',type:'MEMORIAL',desc:'Pope and Bishop of Carthage, both martyrs.'},{day:20,name:'Sts. Andrew Kim Tae-gŏn & Companions',type:'MEMORIAL',desc:'103 Korean martyrs.'},{day:21,name:'St. Matthew, Apostle & Evangelist',type:'FEAST',desc:'Tax collector called by Jesus. Author of the first Gospel.'},{day:23,name:'St. Pius of Pietrelcina (Padre Pio)',type:'MEMORIAL',desc:'Capuchin friar who bore the stigmata for fifty years.'},{day:27,name:'St. Vincent de Paul',type:'MEMORIAL',desc:'Apostle of charity.'},{day:29,name:'Sts. Michael, Gabriel & Raphael, Archangels',type:'FEAST',desc:'The three named archangels.'},{day:30,name:'St. Jerome',type:'MEMORIAL',desc:'Translated the Bible into Latin. Patron of scholars.'}],
+  10:[{day:1,name:'St. Thérèse of the Child Jesus',type:'MEMORIAL',desc:'Doctor of the Church, patron of missions. The "Little Way."'},{day:2,name:'Holy Guardian Angels',type:'MEMORIAL',desc:'The angels appointed to guard every human soul.'},{day:4,name:'St. Francis of Assisi',type:'MEMORIAL',desc:'The Poverello who received the stigmata.'},{day:7,name:'Our Lady of the Rosary',type:'MEMORIAL',desc:'Instituted after the victory at Lepanto in 1571.'},{day:15,name:'St. Teresa of Ávila',type:'MEMORIAL',desc:'First woman Doctor of the Church. Reformer of Carmel.'},{day:17,name:'St. Ignatius of Antioch',type:'MEMORIAL',desc:'Bishop and martyr, wrote letters on his way to be devoured by lions.'},{day:18,name:'St. Luke, Evangelist',type:'FEAST',desc:'Physician, companion of Paul, author of the third Gospel.'},{day:19,name:'Sts. John de Brébeuf & Companions',type:'MEMORIAL',desc:'North American Jesuit Martyrs.'},{day:22,name:'St. John Paul II',type:'OPTIONAL',desc:'Pope of the New Evangelization.'},{day:28,name:'Sts. Simon & Jude, Apostles',type:'FEAST',desc:'Simon the Zealot and Jude Thaddaeus.'}],
+  11:[{day:1,name:'All Saints',type:'SOLEMNITY',desc:'All the saints in heaven. Holy Day of Obligation.'},{day:2,name:'Commemoration of All the Faithful Departed',type:'COMMEMORATION',desc:'The Church prays for the souls in Purgatory.'},{day:3,name:'St. Martin de Porres',type:'OPTIONAL',desc:'Dominican lay brother in Peru.'},{day:4,name:'St. Charles Borromeo',type:'MEMORIAL',desc:'Archbishop of Milan, patron of seminaries.'},{day:9,name:'Dedication of the Lateran Basilica',type:'FEAST',desc:'"Mother church of all churches," consecrated in the 4th century.'},{day:10,name:'St. Leo the Great',type:'MEMORIAL',desc:'Pope who turned Attila the Hun away from Rome.'},{day:11,name:'St. Martin of Tours',type:'MEMORIAL',desc:'Soldier who became a bishop. Patron of soldiers.'},{day:12,name:'St. Josaphat',type:'MEMORIAL',desc:'Ukrainian bishop martyred for union with Rome.'},{day:15,name:'St. Albert the Great',type:'OPTIONAL',desc:'Doctor of the Church, teacher of St. Thomas Aquinas.'},{day:17,name:'St. Elizabeth of Hungary',type:'MEMORIAL',desc:'Princess who gave her wealth to the poor.'},{day:21,name:'Presentation of the Blessed Virgin Mary',type:'MEMORIAL',desc:'Mary presented in the Temple as a child.'},{day:22,name:'St. Cecilia',type:'MEMORIAL',desc:'Roman martyr, patron of musicians.'},{day:23,name:'St. Clement I',type:'OPTIONAL',desc:'Third Pope; earliest surviving papal document.'},{day:24,name:'St. Andrew Dũng-Lạc & Companions',type:'MEMORIAL',desc:'117 Vietnamese martyrs.'},{day:30,name:'St. Andrew, Apostle',type:'FEAST',desc:'Brother of Peter, first called. Patron of Scotland.'}],
+  12:[{day:3,name:'St. Francis Xavier',type:'MEMORIAL',desc:'Patron of missions. Apostle to India and Japan.'},{day:6,name:'St. Nicholas',type:'OPTIONAL',desc:'Bishop of Myra, patron of children.'},{day:7,name:'St. Ambrose',type:'MEMORIAL',desc:'Bishop of Milan who baptized St. Augustine.'},{day:8,name:'Immaculate Conception of the Blessed Virgin Mary',type:'SOLEMNITY',desc:'Mary preserved from original sin. Holy Day of Obligation.'},{day:9,name:'St. Juan Diego',type:'OPTIONAL',desc:'Patron of Mexico. Our Lady appeared to him at Guadalupe.'},{day:12,name:'Our Lady of Guadalupe',type:'FEAST',desc:'Patroness of the Americas. Her image on Juan Diego\'s tilma.'},{day:13,name:'St. Lucy',type:'MEMORIAL',desc:'Sicilian martyr. Patron of the blind.'},{day:14,name:'St. John of the Cross',type:'MEMORIAL',desc:'Mystic, poet, Doctor of the Church.'},{day:25,name:'Nativity of the Lord — Christmas',type:'SOLEMNITY',desc:'The Word became flesh. Holy Day of Obligation.'},{day:26,name:'St. Stephen, First Martyr',type:'FEAST',desc:'First Christian martyr.'},{day:27,name:'St. John, Apostle & Evangelist',type:'FEAST',desc:'The beloved disciple, author of the fourth Gospel.'},{day:28,name:'Holy Innocents, Martyrs',type:'FEAST',desc:'Children of Bethlehem slaughtered by Herod.'},{day:29,name:'St. Thomas Becket',type:'OPTIONAL',desc:'Archbishop of Canterbury murdered at the altar.'},{day:31,name:'St. Sylvester I',type:'OPTIONAL',desc:'Pope during Constantine\'s reign.'}],
+};
+
+// Detail cache from API
+const apiCache={};
+
+function getSaintForDay(year,month,day){
+  // month is 0-indexed
+  const m=month+1;
+  return(SAINTS[m]||[]).find(s=>s.day===day)||null;
+}
+
+function renderGrid(){
+  document.getElementById('monthLabel').textContent=MONTHS[vM]+' '+vY;
+  const firstDay=new Date(vY,vM,1).getDay();
+  const daysInMonth=new Date(vY,vM+1,0).getDate();
+  const grid=document.getElementById('calGrid');
+  // Keep headers only
+  const heads=Array.from(grid.querySelectorAll('.cal-head'));
+  grid.innerHTML=''; heads.forEach(h=>grid.appendChild(h));
+  // Empty leading cells
+  for(let i=0;i<firstDay;i++){const b=document.createElement('div');b.className='cal-cell empty';grid.appendChild(b);}
+  // Day cells
+  for(let d=1;d<=daysInMonth;d++){
+    const saint=getSaintForDay(vY,vM,d);
+    const thisDate=new Date(vY,vM,d);
+    const isT=thisDate.getTime()===today.getTime();
+    // Estimate season from month (fallback without API)
+    const sc=estimateSeason(vM+1,d);
+    const cell=document.createElement('div');
+    cell.className='cal-cell '+sc+(isT?' is-today':'');
+    const pip=isT?'<span class="today-pip"></span>':'';
+    let chip='';
+    if(saint)chip=`<span class="chip ${chipClass(saint.type)}" title="${saint.name}">${saint.name}</span>`;
+    cell.innerHTML=`<div class="cnum"><span>${d}</span>${pip}</div>${chip}`;
+    cell.addEventListener('click',()=>showDetail(d));
+    grid.appendChild(cell);
+  }
+  // Update season note from first saint or estimation
+  const firstSaint=getSaintForDay(vY,vM,1);
+  document.getElementById('seasonNote').textContent='';
+  // Try API for season
+  fetchSeasonNote();
+}
+
+function estimateSeason(month,day){
+  // Rough season estimation by month (actual moveable feasts vary by year)
+  if(month===12&&day>=1&&day<=24)return's-advent';
+  if(month===12&&day>=25)return's-christmas';
+  if(month===1&&day<=11)return's-christmas';
+  if(month===2&&day>=17&&month===2)return's-lent'; // rough
+  if(month>=3&&month<=4)return's-lent'; // rough — depends on Easter
+  if(month>=4&&month<=6)return's-easter'; // rough
+  return's-ordinary';
+}
+
+async function fetchSeasonNote(){
+  const mm=String(vM+1).padStart(2,'0');
+  const dd='01';
+  const key=`${mm}-${dd}`;
+  if(!apiCache[key]){
+    try{
+      const r=await fetch(`https://cpbjr.github.io/catholic-readings-api/liturgical-calendar/2026/${key}.json`);
+      if(r.ok)apiCache[key]=await r.json(); else apiCache[key]=null;
+    }catch{apiCache[key]=null;}
+  }
+  const data=apiCache[key];
+  if(data&&data.season){
+    document.getElementById('seasonNote').textContent='Liturgical Season: '+data.season;
+  }
+}
+
+async function showDetail(day){
+  // Highlight cell
+  document.querySelectorAll('.cal-cell.selected').forEach(c=>c.classList.remove('selected'));
+  const cells=document.querySelectorAll('#calGrid .cal-cell:not(.empty)');
+  if(cells[day-1])cells[day-1].classList.add('selected');
+
+  const dateObj=new Date(vY,vM,day);
+  const dateStr=MONTHS[vM]+' '+day+', '+vY;
+  document.getElementById('dDate').textContent=dateStr;
+  document.getElementById('detailEmpty').style.display='none';
+  document.getElementById('detailContent').style.display='block';
+
+  // Built-in data first — always available
+  const saint=getSaintForDay(vY,vM,day);
+  document.getElementById('dImg').style.display='none';
+  document.getElementById('dName').textContent=saint?saint.name:'Ferial Day';
+  document.getElementById('dBadge').textContent=saint?rl(saint.type):'No special celebration';
+  const qEl=document.getElementById('dQuote');
+  qEl.style.display='none';
+  document.getElementById('dDesc').textContent=saint?saint.desc:'No special feast is celebrated today. It is a ferial day — a time of ordinary prayer and devotion through the Rosary and the sacraments.';
+  document.getElementById('dLinks').innerHTML=
+    `<a href="https://www.vatican.va" target="_blank" rel="noopener" class="d-link">Vatican →</a>`+
+    `<a href="https://www.usccb.org/offices/public-affairs/holy-days-and-feasts" target="_blank" rel="noopener" class="d-link">USCCB →</a>`+
+    `<a href="https://bible.usccb.org" target="_blank" rel="noopener" class="d-link">USCCB Bible →</a>`+
+    `<a href="https://www.catholicnewsagency.com" target="_blank" rel="noopener" class="d-link">CNA →</a>`+
+    `<a href="https://www.ewtn.com" target="_blank" rel="noopener" class="d-link">EWTN →</a>`;
+
+  // Try API to enhance with image/quote
+  const mm=String(vM+1).padStart(2,'0');
+  const dd=String(day).padStart(2,'0');
+  const key=`${mm}-${dd}`;
+  if(!apiCache[key]){
+    try{
+      const r=await fetch(`https://cpbjr.github.io/catholic-readings-api/liturgical-calendar/2026/${key}.json`);
+      if(r.ok)apiCache[key]=await r.json(); else apiCache[key]=null;
+    }catch{apiCache[key]=null;}
+  }
+  const data=apiCache[key];
+  if(data){
+    if(data.season)document.getElementById('dBadge').textContent=(saint?rl(saint.type):'Ferial')+' — '+data.season;
+    const cel=data.celebration;
+    if(cel){
+      if(cel.image){document.getElementById('dImg').src=cel.image;document.getElementById('dImg').alt=cel.name||'';document.getElementById('dImg').style.display='block';}
+      if(cel.quote){qEl.textContent='\u201C'+cel.quote+'\u201D';qEl.style.display='block';}
+      if(cel.description&&cel.description.length>40)document.getElementById('dDesc').textContent=cel.description;
+    }
+  }
+}
+
+function rl(t){return SAINTS[1]?t?t.replace(/_/g,' '):t:'Feast';}
+// redefine rl to match the helper at top
+function rl(t){
+  if(!t)return'Feast Day';const u=t.toUpperCase();
+  if(u.includes('SOLEMNITY'))return'Solemnity';
+  if(u.includes('OPTIONAL'))return'Optional Memorial';
+  if(u.includes('MEMORIAL'))return'Memorial';
+  if(u.includes('FEAST'))return'Feast';
+  if(u.includes('COMMEMORATION'))return'Commemoration';
+  return t;
+}
+
+document.getElementById('prevBtn').addEventListener('click',()=>{vM--;if(vM<0){vM=11;vY--;}renderGrid();});
+document.getElementById('nextBtn').addEventListener('click',()=>{vM++;if(vM>11){vM=0;vY++;}renderGrid();});
+document.getElementById('todayBtn').addEventListener('click',()=>{vY=today.getFullYear();vM=today.getMonth();renderGrid();});
+
+renderGrid();
+injectNav('liturgical-calendar.html');
+</script>
+</body>
+</html>

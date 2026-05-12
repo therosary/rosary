@@ -8,6 +8,7 @@ function injectNav(activePage) {
     { href: 'how-to-pray.html',    label: 'How to Pray the Rosary' },
     { href: 'mystery.html',        label: 'Mystery of the Day' },
     { href: 'reading.html',        label: 'Reading of the Day' },
+    { href: 'saint-of-the-day.html', label: 'Saint of the Day' },
     { href: 'prayer-request.html', label: 'Prayer Requests' },
     { href: 'shop.html',           label: 'Shop' },
   ];
@@ -15,6 +16,7 @@ function injectNav(activePage) {
   // Grouped under "More ▾" dropdown on desktop
   const morePages = [
     { href: 'gallery.html',              label: 'Gallery',            desc: 'The mysteries in pictures' },
+    { href: 'liturgical-calendar.html',  label: 'Liturgical Calendar', desc: 'Feasts & saints by month' },
     { href: 'power-of-the-rosary.html',  label: 'Power of the Rosary', desc: 'The 15 promises & more' },
     { href: 'prayers.html',              label: 'Prayers',             desc: 'Full Catholic prayer library' },
     { href: 'about.html',                label: 'About',               desc: 'Our mission and story' },
@@ -161,6 +163,17 @@ function injectNav(activePage) {
             <li><a href="about.html">About Us</a></li>
             <li><a href="contact.html">Contact</a></li>
             <li><a href="privacy-policy.html">Privacy Policy</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-links">
+          <h4>Other Websites</h4>
+          <ul>
+            <li><a href="https://www.vatican.va" target="_blank" rel="noopener">Vatican — Holy See</a></li>
+            <li><a href="https://www.usccb.org" target="_blank" rel="noopener">USCCB</a></li>
+            <li><a href="https://bible.usccb.org" target="_blank" rel="noopener">USCCB Bible</a></li>
+            <li><a href="https://www.catholicnewsagency.com" target="_blank" rel="noopener">Catholic News Agency</a></li>
+            <li><a href="https://www.ewtn.com" target="_blank" rel="noopener">EWTN</a></li>
           </ul>
         </div>
 
