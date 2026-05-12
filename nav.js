@@ -131,6 +131,8 @@ function injectNav(activePage) {
             <li><a href="how-to-pray.html">How to Pray the Rosary</a></li>
             <li><a href="mystery.html">Mystery of the Day</a></li>
             <li><a href="reading.html">Reading of the Day</a></li>
+            <li><a href="saint-of-the-day.html">Saint of the Day</a></li>
+            <li><a href="liturgical-calendar.html">Liturgical Calendar</a></li>
             <li><a href="power-of-the-rosary.html">Power of the Rosary</a></li>
             <li><a href="gallery.html">Gallery</a></li>
             <li><a href="prayer-request.html">Prayer Requests</a></li>
