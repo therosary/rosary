@@ -127,9 +127,10 @@
       <div class="detail reveal" id="detailPanel">
         <div id="detailEmpty" class="detail-empty">
           <span>✝</span>
-          <p>Tap any day to see its feast, saint, and liturgical information.</p>
+          <p>Tap any day to see its feast, readings, mysteries, and liturgical information.</p>
         </div>
         <div id="detailContent" style="display:none">
+          <!-- Saint section -->
           <p class="d-date" id="dDate"></p>
           <img class="d-img" id="dImg" src="" alt="" style="display:none"/>
           <p class="d-name" id="dName"></p>
@@ -137,10 +138,24 @@
           <blockquote class="d-quote" id="dQuote" style="display:none"></blockquote>
           <p class="d-desc" id="dDesc"></p>
           <div class="d-links" id="dLinks"></div>
+
+          <!-- Readings section -->
+          <div style="margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid var(--gold-dim)">
+            <p style="font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">Mass Readings</p>
+            <p style="font-weight:700;font-size:.88rem;color:var(--cream);margin-bottom:.3rem" id="dReadingTitle"></p>
+            <p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem" id="dReadingRefs"></p>
+            <a id="dUsccbLink" href="#" target="_blank" rel="noopener" class="d-link" style="display:inline-block">Read on USCCB →</a>
+          </div>
+
+          <!-- Mystery section -->
+          <div style="margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid var(--gold-dim)">
+            <p style="font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">Rosary Mystery</p>
+            <p style="font-weight:700;font-size:.88rem;color:var(--cream);margin-bottom:.25rem" id="dMysteryName"></p>
+            <p style="font-size:.82rem;font-style:italic;color:var(--muted);line-height:1.6;margin-bottom:.8rem" id="dMysteryIntro"></p>
+            <a href="how-to-pray.html" class="d-link" style="display:inline-block">How to Pray the Rosary →</a>
+          </div>
         </div>
       </div>
-
-    
 
       <div class="sidebar-card reveal">
         <div class="sidebar-card-title">Saint of the Day</div>
@@ -163,32 +178,6 @@ const MONTHS=['January','February','March','April','May','June','July','August',
 const today=new Date(); today.setHours(0,0,0,0);
 let vY=today.getFullYear(), vM=today.getMonth();
 
-function rl(t){
-  if(!t)return'Feast Day';const u=t.toUpperCase();
-  if(u.includes('SOLEMNITY'))return'Solemnity';
-  if(u.includes('OPTIONAL'))return'Optional Memorial';
-  if(u.includes('MEMORIAL'))return'Memorial';
-  if(u.includes('FEAST'))return'Feast';
-  if(u.includes('COMMEMORATION'))return'Commemoration';
-  return t;
-}
-function chipClass(t){
-  if(!t)return'FEA';const u=t.toUpperCase();
-  if(u.includes('SOLEMNITY'))return'SOL';
-  if(u.includes('OPTIONAL'))return'OPT';
-  if(u.includes('MEMORIAL'))return'MEM';
-  return'FEA';
-}
-function seasonCls(s){
-  if(!s)return's-ordinary';const u=s.toLowerCase();
-  if(u.includes('advent'))return's-advent';
-  if(u.includes('christmas'))return's-christmas';
-  if(u.includes('lent')||u.includes('holy week'))return's-lent';
-  if(u.includes('easter'))return's-easter';
-  return's-ordinary';
-}
-
-// Same built-in data as saint-of-the-day page
 const SAINTS={
   1:[{day:1,name:'Solemnity of Mary, Mother of God',type:'SOLEMNITY',desc:'The Church celebrates Mary as Theotokos — God-bearer — the Mother of Our Lord Jesus Christ.'},{day:2,name:'Sts. Basil the Great & Gregory Nazianzen',type:'MEMORIAL',desc:'Two Doctors of the Church who defended the faith against Arianism in the 4th century.'},{day:4,name:'St. Elizabeth Ann Seton',type:'MEMORIAL',desc:'First native-born American saint, founder of the first free Catholic school in America.'},{day:5,name:'St. John Neumann',type:'MEMORIAL',desc:'Bishop of Philadelphia, first American male saint.'},{day:6,name:'St. André Bessette',type:'OPTIONAL',desc:'Holy Cross brother known for devotion to St. Joseph and the gift of healing.'},{day:7,name:'St. Raymond of Penyafort',type:'OPTIONAL',desc:'Dominican friar and canonist.'},{day:13,name:'St. Hilary of Poitiers',type:'OPTIONAL',desc:'Doctor of the Church called the "Athanasius of the West."'},{day:17,name:'St. Anthony, Abbot',type:'MEMORIAL',desc:'Father of monasticism who lived as a hermit in the Egyptian desert.'},{day:20,name:'St. Fabian',type:'OPTIONAL',desc:'Pope and martyr.'},{day:21,name:'St. Agnes',type:'MEMORIAL',desc:'Young Roman martyr. Patron of girls.'},{day:22,name:'St. Vincent, Deacon & Martyr',type:'OPTIONAL',desc:'Deacon of Saragossa martyred under Diocletian.'},{day:24,name:'St. Francis de Sales',type:'MEMORIAL',desc:'Bishop and Doctor of the Church, patron of writers and journalists.'},{day:25,name:'Conversion of St. Paul',type:'FEAST',desc:'The dramatic conversion of Saul of Tarsus on the road to Damascus.'},{day:26,name:'Sts. Timothy & Titus',type:'MEMORIAL',desc:'Beloved disciples of St. Paul.'},{day:27,name:'St. Angela Merici',type:'OPTIONAL',desc:'Founder of the Ursulines.'},{day:28,name:'St. Thomas Aquinas',type:'MEMORIAL',desc:'Greatest theologian of the Church. Doctor Angelicus.'},{day:31,name:'St. John Bosco',type:'MEMORIAL',desc:'Apostle of youth, founder of the Salesians.'}],
   2:[{day:2,name:'Presentation of the Lord',type:'FEAST',desc:'Jesus presented in the Temple. Simeon proclaimed him "a light to the Gentiles."'},{day:3,name:'St. Blaise',type:'OPTIONAL',desc:'Bishop and martyr. Patron of those with throat ailments.'},{day:5,name:'St. Agatha',type:'MEMORIAL',desc:'Sicilian martyr who endured torture for her faith.'},{day:6,name:'Sts. Paul Miki & Companions',type:'MEMORIAL',desc:'26 martyrs of Japan crucified in 1597.'},{day:10,name:'St. Scholastica',type:'MEMORIAL',desc:'Twin sister of St. Benedict, first Benedictine nun.'},{day:11,name:'Our Lady of Lourdes',type:'OPTIONAL',desc:'Marian apparitions to Bernadette Soubirous in 1858.'},{day:14,name:'Sts. Cyril & Methodius',type:'MEMORIAL',desc:'Apostles to the Slavs.'},{day:17,name:'Seven Founders of the Servite Order',type:'OPTIONAL',desc:'Founders of the Order of Servants of Mary.'},{day:21,name:'St. Peter Damian',type:'OPTIONAL',desc:'Cardinal and Doctor of the Church.'},{day:22,name:'Chair of St. Peter',type:'FEAST',desc:'Celebrates the authority of Peter as head of the Church.'},{day:23,name:'St. Polycarp',type:'MEMORIAL',desc:'Bishop of Smyrna, disciple of St. John, burned at the stake.'}],
@@ -204,128 +193,14 @@ const SAINTS={
   12:[{day:3,name:'St. Francis Xavier',type:'MEMORIAL',desc:'Patron of missions. Apostle to India and Japan.'},{day:6,name:'St. Nicholas',type:'OPTIONAL',desc:'Bishop of Myra, patron of children.'},{day:7,name:'St. Ambrose',type:'MEMORIAL',desc:'Bishop of Milan who baptized St. Augustine.'},{day:8,name:'Immaculate Conception of the Blessed Virgin Mary',type:'SOLEMNITY',desc:'Mary preserved from original sin. Holy Day of Obligation.'},{day:9,name:'St. Juan Diego',type:'OPTIONAL',desc:'Patron of Mexico. Our Lady appeared to him at Guadalupe.'},{day:12,name:'Our Lady of Guadalupe',type:'FEAST',desc:'Patroness of the Americas. Her image on Juan Diego\'s tilma.'},{day:13,name:'St. Lucy',type:'MEMORIAL',desc:'Sicilian martyr. Patron of the blind.'},{day:14,name:'St. John of the Cross',type:'MEMORIAL',desc:'Mystic, poet, Doctor of the Church.'},{day:25,name:'Nativity of the Lord — Christmas',type:'SOLEMNITY',desc:'The Word became flesh. Holy Day of Obligation.'},{day:26,name:'St. Stephen, First Martyr',type:'FEAST',desc:'First Christian martyr.'},{day:27,name:'St. John, Apostle & Evangelist',type:'FEAST',desc:'The beloved disciple, author of the fourth Gospel.'},{day:28,name:'Holy Innocents, Martyrs',type:'FEAST',desc:'Children of Bethlehem slaughtered by Herod.'},{day:29,name:'St. Thomas Becket',type:'OPTIONAL',desc:'Archbishop of Canterbury murdered at the altar.'},{day:31,name:'St. Sylvester I',type:'OPTIONAL',desc:'Pope during Constantine\'s reign.'}],
 };
 
-// Detail cache from API
 const apiCache={};
 
-function getSaintForDay(year,month,day){
-  // month is 0-indexed
-  const m=month+1;
-  return(SAINTS[m]||[]).find(s=>s.day===day)||null;
+function getSaintForDay(month0, day){
+  return (SAINTS[month0+1]||[]).find(s=>s.day===day)||null;
 }
 
-function renderGrid(){
-  document.getElementById('monthLabel').textContent=MONTHS[vM]+' '+vY;
-  const firstDay=new Date(vY,vM,1).getDay();
-  const daysInMonth=new Date(vY,vM+1,0).getDate();
-  const grid=document.getElementById('calGrid');
-  // Keep headers only
-  const heads=Array.from(grid.querySelectorAll('.cal-head'));
-  grid.innerHTML=''; heads.forEach(h=>grid.appendChild(h));
-  // Empty leading cells
-  for(let i=0;i<firstDay;i++){const b=document.createElement('div');b.className='cal-cell empty';grid.appendChild(b);}
-  // Day cells
-  for(let d=1;d<=daysInMonth;d++){
-    const saint=getSaintForDay(vY,vM,d);
-    const thisDate=new Date(vY,vM,d);
-    const isT=thisDate.getTime()===today.getTime();
-    // Estimate season from month (fallback without API)
-    const sc=estimateSeason(vM+1,d);
-    const cell=document.createElement('div');
-    cell.className='cal-cell '+sc+(isT?' is-today':'');
-    const pip=isT?'<span class="today-pip"></span>':'';
-    let chip='';
-    if(saint)chip=`<span class="chip ${chipClass(saint.type)}" title="${saint.name}">${saint.name}</span>`;
-    cell.innerHTML=`<div class="cnum"><span>${d}</span>${pip}</div>${chip}`;
-    cell.addEventListener('click',()=>showDetail(d));
-    grid.appendChild(cell);
-  }
-  // Update season note from first saint or estimation
-  const firstSaint=getSaintForDay(vY,vM,1);
-  document.getElementById('seasonNote').textContent='';
-  // Try API for season
-  fetchSeasonNote();
-}
-
-function estimateSeason(month,day){
-  // Rough season estimation by month (actual moveable feasts vary by year)
-  if(month===12&&day>=1&&day<=24)return's-advent';
-  if(month===12&&day>=25)return's-christmas';
-  if(month===1&&day<=11)return's-christmas';
-  if(month===2&&day>=17&&month===2)return's-lent'; // rough
-  if(month>=3&&month<=4)return's-lent'; // rough — depends on Easter
-  if(month>=4&&month<=6)return's-easter'; // rough
-  return's-ordinary';
-}
-
-async function fetchSeasonNote(){
-  const mm=String(vM+1).padStart(2,'0');
-  const dd='01';
-  const key=`${mm}-${dd}`;
-  if(!apiCache[key]){
-    try{
-      const r=await fetch(`https://cpbjr.github.io/catholic-readings-api/liturgical-calendar/2026/${key}.json`);
-      if(r.ok)apiCache[key]=await r.json(); else apiCache[key]=null;
-    }catch{apiCache[key]=null;}
-  }
-  const data=apiCache[key];
-  if(data&&data.season){
-    document.getElementById('seasonNote').textContent='Liturgical Season: '+data.season;
-  }
-}
-
-async function showDetail(day){
-  // Highlight cell
-  document.querySelectorAll('.cal-cell.selected').forEach(c=>c.classList.remove('selected'));
-  const cells=document.querySelectorAll('#calGrid .cal-cell:not(.empty)');
-  if(cells[day-1])cells[day-1].classList.add('selected');
-
-  const dateObj=new Date(vY,vM,day);
-  const dateStr=MONTHS[vM]+' '+day+', '+vY;
-  document.getElementById('dDate').textContent=dateStr;
-  document.getElementById('detailEmpty').style.display='none';
-  document.getElementById('detailContent').style.display='block';
-
-  // Built-in data first — always available
-  const saint=getSaintForDay(vY,vM,day);
-  document.getElementById('dImg').style.display='none';
-  document.getElementById('dName').textContent=saint?saint.name:'Ferial Day';
-  document.getElementById('dBadge').textContent=saint?rl(saint.type):'No special celebration';
-  const qEl=document.getElementById('dQuote');
-  qEl.style.display='none';
-  document.getElementById('dDesc').textContent=saint?saint.desc:'No special feast is celebrated today. It is a ferial day — a time of ordinary prayer and devotion through the Rosary and the sacraments.';
-  document.getElementById('dLinks').innerHTML=
-    `<a href="https://www.vatican.va" target="_blank" rel="noopener" class="d-link">Vatican →</a>`+
-    `<a href="https://www.usccb.org/offices/public-affairs/holy-days-and-feasts" target="_blank" rel="noopener" class="d-link">USCCB →</a>`+
-    `<a href="https://bible.usccb.org" target="_blank" rel="noopener" class="d-link">USCCB Bible →</a>`+
-    `<a href="https://www.catholicnewsagency.com" target="_blank" rel="noopener" class="d-link">CNA →</a>`+
-    `<a href="https://www.ewtn.com" target="_blank" rel="noopener" class="d-link">EWTN →</a>`;
-
-  // Try API to enhance with image/quote
-  const mm=String(vM+1).padStart(2,'0');
-  const dd=String(day).padStart(2,'0');
-  const key=`${mm}-${dd}`;
-  if(!apiCache[key]){
-    try{
-      const r=await fetch(`https://cpbjr.github.io/catholic-readings-api/liturgical-calendar/2026/${key}.json`);
-      if(r.ok)apiCache[key]=await r.json(); else apiCache[key]=null;
-    }catch{apiCache[key]=null;}
-  }
-  const data=apiCache[key];
-  if(data){
-    if(data.season)document.getElementById('dBadge').textContent=(saint?rl(saint.type):'Ferial')+' — '+data.season;
-    const cel=data.celebration;
-    if(cel){
-      if(cel.image){document.getElementById('dImg').src=cel.image;document.getElementById('dImg').alt=cel.name||'';document.getElementById('dImg').style.display='block';}
-      if(cel.quote){qEl.textContent='\u201C'+cel.quote+'\u201D';qEl.style.display='block';}
-      if(cel.description&&cel.description.length>40)document.getElementById('dDesc').textContent=cel.description;
-    }
-  }
-}
-
-function rl(t){return SAINTS[1]?t?t.replace(/_/g,' '):t:'Feast';}
-// redefine rl to match the helper at top
 function rl(t){
-  if(!t)return'Feast Day';const u=t.toUpperCase();
+  if(!t)return'Feast Day'; const u=t.toUpperCase();
   if(u.includes('SOLEMNITY'))return'Solemnity';
   if(u.includes('OPTIONAL'))return'Optional Memorial';
   if(u.includes('MEMORIAL'))return'Memorial';
@@ -333,10 +208,169 @@ function rl(t){
   if(u.includes('COMMEMORATION'))return'Commemoration';
   return t;
 }
+function chipClass(t){
+  if(!t)return'FEA'; const u=t.toUpperCase();
+  if(u.includes('SOLEMNITY'))return'SOL';
+  if(u.includes('OPTIONAL'))return'OPT';
+  if(u.includes('MEMORIAL'))return'MEM';
+  return'FEA';
+}
+function seasonCls(month1){
+  if(month1===12)return's-advent';
+  if(month1===1)return's-christmas';
+  if(month1===2||month1===3)return's-lent';
+  if(month1===4||month1===5)return's-easter';
+  return's-ordinary';
+}
 
-document.getElementById('prevBtn').addEventListener('click',()=>{vM--;if(vM<0){vM=11;vY--;}renderGrid();});
-document.getElementById('nextBtn').addEventListener('click',()=>{vM++;if(vM>11){vM=0;vY++;}renderGrid();});
-document.getElementById('todayBtn').addEventListener('click',()=>{vY=today.getFullYear();vM=today.getMonth();renderGrid();});
+// Mystery data
+const MYSTERY_MAP={0:'glorious',1:'joyful',2:'sorrowful',3:'glorious',4:'luminous',5:'sorrowful',6:'joyful'};
+const MYSTERY_NAMES={joyful:'Joyful Mysteries',luminous:'Luminous Mysteries',sorrowful:'Sorrowful Mysteries',glorious:'Glorious Mysteries'};
+const MYSTERY_INTRO={
+  joyful:"Prayed on Mondays & Saturdays — the joy of the Incarnation of Christ.",
+  luminous:"Prayed on Thursdays — key moments of Christ's public ministry.",
+  sorrowful:"Prayed on Tuesdays & Fridays — the passion and death of Our Lord.",
+  glorious:"Prayed on Sundays & Wednesdays — the triumph of Christ over death."
+};
+
+// Readings (day-of-week)
+const READING_TITLES=["Sunday — The Lord's Day","Monday — Weekday","Tuesday — Weekday","Wednesday — Weekday","Thursday — Weekday","Friday — Day of the Cross","Saturday — Memorial of Our Lady"];
+const READING_REFS=[
+  ['Acts 2:42-47','Psalm 118','1 Peter 1:3-9','Gospel: John 20:19-31'],
+  ['Isaiah 7:10-14','Psalm 40','Gospel: Luke 1:26-38'],
+  ['Isaiah 53:1-6','Psalm 22','Gospel: John 19:17-30'],
+  ['Acts 1:1-11','Psalm 47','Gospel: Mark 16:15-20'],
+  ['1 Corinthians 11:23-26','Psalm 116','Gospel: John 6:51-58'],
+  ['Hebrews 9:11-15','Psalm 116','Gospel: Mark 10:45'],
+  ['Sirach 24:1-4','Psalm 45','Gospel: Luke 2:41-51']
+];
+
+function renderGrid(){
+  document.getElementById('monthLabel').textContent = MONTHS[vM]+' '+vY;
+  var firstDay    = new Date(vY, vM, 1).getDay();
+  var daysInMonth = new Date(vY, vM+1, 0).getDate();
+  var grid = document.getElementById('calGrid');
+
+  // Remove only day cells — keep the 7 header divs
+  Array.from(grid.querySelectorAll('.cal-cell')).forEach(function(c){ c.remove(); });
+
+  // Empty leading cells
+  for(var i=0; i<firstDay; i++){
+    var b=document.createElement('div');
+    b.className='cal-cell empty';
+    grid.appendChild(b);
+  }
+
+  // Day cells
+  for(var d=1; d<=daysInMonth; d++){
+    var saint   = getSaintForDay(vM, d);
+    var thisDate= new Date(vY, vM, d);
+    var isToday = thisDate.getTime()===today.getTime();
+    var sc      = seasonCls(vM+1);
+    var cell    = document.createElement('div');
+    cell.className = 'cal-cell '+sc+(isToday?' is-today':'');
+    var pip  = isToday ? '<span class="today-pip"></span>' : '';
+    var chip = saint
+      ? '<span class="chip '+chipClass(saint.type)+'" title="'+saint.name+'">'+saint.name+'</span>'
+      : '';
+    cell.innerHTML = '<div class="cnum"><span>'+d+'</span>'+pip+'</div>'+chip;
+    (function(day){ cell.addEventListener('click', function(){ showDetail(day); }); })(d);
+    grid.appendChild(cell);
+  }
+
+  document.getElementById('seasonNote').textContent='';
+  fetchSeasonNote();
+}
+
+function fetchSeasonNote(){
+  var mm  = String(vM+1).padStart(2,'0');
+  var key = mm+'-01';
+  if(apiCache[key]!==undefined){
+    if(apiCache[key]&&apiCache[key].season)
+      document.getElementById('seasonNote').textContent='Liturgical Season: '+apiCache[key].season;
+    return;
+  }
+  apiCache[key]=null;
+  fetch('https://cpbjr.github.io/catholic-readings-api/liturgical-calendar/2026/'+key+'.json')
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(data){
+      apiCache[key]=data;
+      if(data&&data.season) document.getElementById('seasonNote').textContent='Liturgical Season: '+data.season;
+    }).catch(function(){});
+}
+
+function showDetail(day){
+  // Highlight selected cell
+  document.querySelectorAll('.cal-cell.selected').forEach(function(c){ c.classList.remove('selected'); });
+  var allCells = document.querySelectorAll('#calGrid .cal-cell:not(.empty)');
+  if(allCells[day-1]) allCells[day-1].classList.add('selected');
+
+  var dateObj = new Date(vY, vM, day);
+  var dow     = dateObj.getDay();
+  var dateStr = MONTHS[vM]+' '+day+', '+vY;
+
+  document.getElementById('dDate').textContent         = dateStr;
+  document.getElementById('detailEmpty').style.display = 'none';
+  document.getElementById('detailContent').style.display= 'block';
+
+  // Saint
+  var saint = getSaintForDay(vM, day);
+  var qEl   = document.getElementById('dQuote');
+  document.getElementById('dImg').style.display  = 'none';
+  document.getElementById('dName').textContent   = saint ? saint.name : 'Ferial Day';
+  document.getElementById('dBadge').textContent  = saint ? rl(saint.type) : 'No special celebration';
+  qEl.style.display = 'none';
+  document.getElementById('dDesc').textContent   = saint ? saint.desc : 'No special feast today. A ferial day of prayer and devotion through the Rosary and the sacraments.';
+  document.getElementById('dLinks').innerHTML    =
+    '<a href="https://www.vatican.va" target="_blank" rel="noopener" class="d-link">Vatican &#8594;</a>'+
+    '<a href="https://www.usccb.org/offices/public-affairs/holy-days-and-feasts" target="_blank" rel="noopener" class="d-link">USCCB &#8594;</a>'+
+    '<a href="https://bible.usccb.org" target="_blank" rel="noopener" class="d-link">USCCB Bible &#8594;</a>'+
+    '<a href="https://www.catholicnewsagency.com" target="_blank" rel="noopener" class="d-link">CNA &#8594;</a>'+
+    '<a href="https://www.ewtn.com" target="_blank" rel="noopener" class="d-link">EWTN &#8594;</a>';
+
+  // Readings
+  document.getElementById('dReadingTitle').textContent = READING_TITLES[dow];
+  document.getElementById('dReadingRefs').textContent  = READING_REFS[dow].join('  ·  ');
+  var yy  = String(vY).slice(-2);
+  var mm2 = String(vM+1).padStart(2,'0');
+  var dd2 = String(day).padStart(2,'0');
+  document.getElementById('dUsccbLink').href = 'https://bible.usccb.org/bible/readings/'+mm2+dd2+yy+'.cfm';
+
+  // Mystery
+  var mKey = MYSTERY_MAP[dow];
+  document.getElementById('dMysteryName').textContent  = MYSTERY_NAMES[mKey];
+  document.getElementById('dMysteryIntro').textContent = MYSTERY_INTRO[mKey];
+
+  // API enhancement
+  var key = mm2+'-'+dd2;
+  if(apiCache[key]!==undefined){
+    applyApiData(apiCache[key], saint, qEl);
+    return;
+  }
+  apiCache[key]=null;
+  fetch('https://cpbjr.github.io/catholic-readings-api/liturgical-calendar/2026/'+key+'.json')
+    .then(function(r){ return r.ok?r.json():null; })
+    .then(function(data){
+      apiCache[key]=data;
+      applyApiData(data, saint, qEl);
+    }).catch(function(){});
+}
+
+function applyApiData(data, saint, qEl){
+  if(!data) return;
+  if(data.season)
+    document.getElementById('dBadge').textContent=(saint?rl(saint.type):'Ferial')+' — '+data.season;
+  var cel=data.celebration;
+  if(cel){
+    if(cel.image){ document.getElementById('dImg').src=cel.image; document.getElementById('dImg').alt=cel.name||''; document.getElementById('dImg').style.display='block'; }
+    if(cel.quote){ qEl.textContent='“'+cel.quote+'”'; qEl.style.display='block'; }
+    if(cel.description&&cel.description.length>40) document.getElementById('dDesc').textContent=cel.description;
+  }
+}
+
+document.getElementById('prevBtn').addEventListener('click',function(){ vM--; if(vM<0){vM=11;vY--;} renderGrid(); });
+document.getElementById('nextBtn').addEventListener('click',function(){ vM++; if(vM>11){vM=0;vY++;} renderGrid(); });
+document.getElementById('todayBtn').addEventListener('click',function(){ vY=today.getFullYear(); vM=today.getMonth(); renderGrid(); });
 
 renderGrid();
 injectNav('liturgical-calendar.html');
