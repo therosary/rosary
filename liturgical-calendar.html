@@ -141,10 +141,10 @@
 
           <!-- Readings section -->
           <div style="margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid var(--gold-dim)">
-            <p style="font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">Mass Readings</p>
-            <p style="font-weight:700;font-size:.88rem;color:var(--cream);margin-bottom:.3rem" id="dReadingTitle"></p>
-            <p style="font-size:.82rem;color:var(--muted);margin-bottom:.8rem" id="dReadingRefs"></p>
-            <a id="dUsccbLink" href="#" target="_blank" rel="noopener" class="d-link" style="display:inline-block">Read on USCCB →</a>
+            <p style="font-size:.55rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem">Mass Readings</p>
+            <div id="dReadingsBody">
+              <p style="font-size:.82rem;color:var(--muted);font-style:italic">Loading readings…</p>
+            </div>
           </div>
 
           <!-- Mystery section -->
@@ -155,6 +155,18 @@
             <a href="how-to-pray.html" class="d-link" style="display:inline-block">How to Pray the Rosary →</a>
           </div>
         </div>
+      </div>
+
+      <!-- Other websites — same as footer -->
+      <div class="sidebar-card reveal">
+        <div class="sidebar-card-title">Other Websites</div>
+        <ul style="list-style:none;padding:0;margin:0">
+          <li style="border-bottom:1px solid var(--gold-dim);padding:.55rem 0"><a href="https://www.vatican.va" target="_blank" rel="noopener" style="font-size:.83rem;color:var(--gold);text-decoration:none">Vatican — Holy See →</a></li>
+          <li style="border-bottom:1px solid var(--gold-dim);padding:.55rem 0"><a href="https://www.usccb.org" target="_blank" rel="noopener" style="font-size:.83rem;color:var(--gold);text-decoration:none">USCCB →</a></li>
+          <li style="border-bottom:1px solid var(--gold-dim);padding:.55rem 0"><a href="https://bible.usccb.org" target="_blank" rel="noopener" style="font-size:.83rem;color:var(--gold);text-decoration:none">USCCB Bible →</a></li>
+          <li style="border-bottom:1px solid var(--gold-dim);padding:.55rem 0"><a href="https://www.catholicnewsagency.com" target="_blank" rel="noopener" style="font-size:.83rem;color:var(--gold);text-decoration:none">Catholic News Agency →</a></li>
+          <li style="padding:.55rem 0"><a href="https://www.ewtn.com" target="_blank" rel="noopener" style="font-size:.83rem;color:var(--gold);text-decoration:none">EWTN →</a></li>
+        </ul>
       </div>
 
       <div class="sidebar-card reveal">
@@ -233,17 +245,38 @@ const MYSTERY_INTRO={
   glorious:"Prayed on Sundays & Wednesdays — the triumph of Christ over death."
 };
 
-// Readings (day-of-week)
-const READING_TITLES=["Sunday — The Lord's Day","Monday — Weekday","Tuesday — Weekday","Wednesday — Weekday","Thursday — Weekday","Friday — Day of the Cross","Saturday — Memorial of Our Lady"];
-const READING_REFS=[
-  ['Acts 2:42-47','Psalm 118','1 Peter 1:3-9','Gospel: John 20:19-31'],
-  ['Isaiah 7:10-14','Psalm 40','Gospel: Luke 1:26-38'],
-  ['Isaiah 53:1-6','Psalm 22','Gospel: John 19:17-30'],
-  ['Acts 1:1-11','Psalm 47','Gospel: Mark 16:15-20'],
-  ['1 Corinthians 11:23-26','Psalm 116','Gospel: John 6:51-58'],
-  ['Hebrews 9:11-15','Psalm 116','Gospel: Mark 10:45'],
-  ['Sirach 24:1-4','Psalm 45','Gospel: Luke 2:41-51']
-];
+// Readings fetched live from API per date
+
+
+function renderReadings(data, usccbLink) {
+  var el = document.getElementById('dReadingsBody');
+  if (!el) return;
+  if (!data || !data.readings) {
+    el.innerHTML =
+      '<p style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">Visit USCCB.org for today's official readings.</p>' +
+      '<a href="'+usccbLink+'" target="_blank" rel="noopener" class="d-link">Read on USCCB →</a>';
+    return;
+  }
+  var r = data.readings;
+  var rows = [];
+  if (r.firstReading)  rows.push({label:'First Reading', ref:r.firstReading});
+  if (r.psalm)         rows.push({label:'Psalm',          ref:r.psalm});
+  if (r.secondReading) rows.push({label:'Second Reading', ref:r.secondReading});
+  if (r.gospel)        rows.push({label:'Gospel',         ref:r.gospel});
+
+  var html = rows.map(function(row){
+    var isGospel = row.label === 'Gospel';
+    var weight = isGospel ? '700' : '400';
+    var color  = isGospel ? 'var(--gold)' : 'var(--muted)';
+    return '<div style="padding:.45rem 0;border-bottom:1px solid var(--gold-dim)">' +
+      '<span style="font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:'+color+'">'+row.label+'</span><br/>' +
+      '<span style="font-size:.88rem;color:var(--cream);font-weight:'+weight+'">'+row.ref+'</span>' +
+    '</div>';
+  }).join('');
+
+  html += '<a href="'+usccbLink+'" target="_blank" rel="noopener" class="d-link" style="margin-top:.8rem;display:inline-block">Full Text on USCCB →</a>';
+  el.innerHTML = html;
+}
 
 function renderGrid(){
   document.getElementById('monthLabel').textContent = MONTHS[vM]+' '+vY;
@@ -328,13 +361,23 @@ function showDetail(day){
     '<a href="https://www.catholicnewsagency.com" target="_blank" rel="noopener" class="d-link">CNA &#8594;</a>'+
     '<a href="https://www.ewtn.com" target="_blank" rel="noopener" class="d-link">EWTN &#8594;</a>';
 
-  // Readings
-  document.getElementById('dReadingTitle').textContent = READING_TITLES[dow];
-  document.getElementById('dReadingRefs').textContent  = READING_REFS[dow].join('  ·  ');
-  var yy  = String(vY).slice(-2);
+  // Readings — fetch real data from the API for this specific date
   var mm2 = String(vM+1).padStart(2,'0');
   var dd2 = String(day).padStart(2,'0');
-  document.getElementById('dUsccbLink').href = 'https://bible.usccb.org/bible/readings/'+mm2+dd2+yy+'.cfm';
+  var yy2 = String(vY).slice(-2);
+  var usccbDateLink = 'https://bible.usccb.org/bible/readings/'+mm2+dd2+yy2+'.cfm';
+  document.getElementById('dReadingsBody').innerHTML =
+    '<p style="font-size:.82rem;color:var(--muted);font-style:italic">Loading readings…</p>';
+  var readKey = 'readings-'+mm2+'-'+dd2;
+  if(apiCache[readKey] !== undefined){
+    renderReadings(apiCache[readKey], usccbDateLink);
+  } else {
+    apiCache[readKey] = null;
+    fetch('https://cpbjr.github.io/catholic-readings-api/readings/'+vY+'/'+mm2+'-'+dd2+'.json')
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(data){ apiCache[readKey]=data; renderReadings(data, usccbDateLink); })
+      .catch(function(){ renderReadings(null, usccbDateLink); });
+  }
 
   // Mystery
   var mKey = MYSTERY_MAP[dow];

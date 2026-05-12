@@ -7,7 +7,6 @@ function injectNav(activePage) {
     { href: 'index.html',          label: 'Home' },
     { href: 'how-to-pray.html',    label: 'How to Pray the Rosary' },
     { href: 'mystery.html',        label: 'Mystery of the Day' },
-    { href: 'reading.html',        label: 'Reading of the Day' },
     { href: 'saint-of-the-day.html', label: 'Saint of the Day' },
     { href: 'prayer-request.html', label: 'Prayer Requests' },
     { href: 'shop.html',           label: 'Shop' },
@@ -130,7 +129,6 @@ function injectNav(activePage) {
             <li><a href="index.html">Home</a></li>
             <li><a href="how-to-pray.html">How to Pray the Rosary</a></li>
             <li><a href="mystery.html">Mystery of the Day</a></li>
-            <li><a href="reading.html">Reading of the Day</a></li>
             <li><a href="saint-of-the-day.html">Saint of the Day</a></li>
             <li><a href="liturgical-calendar.html">Liturgical Calendar</a></li>
             <li><a href="power-of-the-rosary.html">Power of the Rosary</a></li>

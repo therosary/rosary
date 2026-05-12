@@ -5,8 +5,7 @@
 
   // ── ALL PAGES ON THE SITE ──────────────────────────────────────────────────
   const ALL_PAGES = [
-    "index.html","how-to-pray.html","mystery.html","reading.html",
-    "saint-of-the-day.html","liturgical-calendar.html",
+    "index.html","how-to-pray.html","mystery.html","saint-of-the-day.html","liturgical-calendar.html",
     "prayer-request.html","prayers.html","gallery.html",
     "power-of-the-rosary.html","shop.html","about.html","contact.html",
     "prayers-rosary.html","prayers-marian.html","prayers-morning.html",
@@ -76,7 +75,7 @@
     "prayer-traveler-s-prayer.html",
   ];
 
-  const CACHE_KEY = 'rosary_search_index_v4';
+  const CACHE_KEY = 'rosary_search_index_v5';
   const CACHE_TTL = 1000 * 60 * 60 * 6; // 6 hours
 
   let searchIndex = [];
